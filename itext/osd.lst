@@ -1,0 +1,657 @@
+HI-CROSS+ ANSI-C/cC++ Compiler for HC05 V-5.0.8, Dec 15 1998
+
+    1:  #include "osd.h"
+    2:  
+    3:  #define ZOOM_REGISTER           0xcc
+    4:  #define COLOR_REGISTER          0xcd
+    5:  #define CONTROL_REGISTER        0xce
+    6:  #define POSITION_REGISTER       0xcf
+    7:  #define MODE_REGISTER           0xd0
+    8:  #define PAGE_ADDRESS            0x0
+    9:  #define DATA_REGISTER           0x1000
+   10:  #define ROW_ATTRIBUTES          0xc0
+   11:  #define REQUEST                 0xec
+   12:  
+   13:  #define Tui	unsigned int
+   14:  #define Tuc unsigned char
+   15:  void OSD_SendWord (int  word);
+   16:  
+   17:  union {
+   18:    struct {
+   19:  	 Tui	_PageMode	:1;
+   20:  	 Tui	_CharMode	:1;
+   21:  	 Tui	_display	:1;
+   22:  	 Tui	_c3			:1;
+   23:  	 Tui	_BlinkOpt	:1;
+   24:  	 Tui	_BlinkPeriod:2;
+   25:  	 Tui	_sync		:1;
+   26:  	 Tui	_standard	:1;
+   27:  	 Tui	_ColorEnc	:1;
+   28:  	 Tui	_luminance	:1;
+   29:  	 Tui	_VideoFullPage:1;
+   30:    } _bits;
+   31:    Tuc      _valor;
+   32:  } u_mode; 
+   33:  
+   34:  
+   35:  const char tabla[]={
+   36:          '0','1','2','3','4','5','6','7','8','9','-',' ','A','B','C','D','E','F','G','H','I','J','K',
+   37:          'L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',':','.','/','·','a','b','c','d',
+   38:          'e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','à',
+   39:          'â','ä','á','é','è','ë','ì','î','ï','í','ò','ô','ö','ó','ù','û','ü','ú','Ä','Ö','Ü'};
+   40:  
+   41:  void OSD_Reset (void)
+   42:  {
+   43:     char n,i;
+   44:     int buff;
+   45:  
+   46:     u_mode._valor =0xb8e;
+
+Function: OSD_Reset
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 a68e     LDA   #-114
+  0002 c70000   STA   u_mode
+   47:  
+   48:     OSD_SendWord (0x3000);
+  0005 ae30     LDX   #48
+  0007 4f       CLRA  
+  0008 cd0000   JSR   OSD_SendWord
+   49:     OSD_SendWord (0x3000);
+  000b ae30     LDX   #48
+  000d 4f       CLRA  
+  000e cd0000   JSR   OSD_SendWord
+   50:     OSD_SendWord (0x0);
+  0011 5f       CLRX  
+  0012 4f       CLRA  
+  0013 cd0000   JSR   OSD_SendWord
+   51:     OSD_SendWord (0x1000);                      
+  0016 ae10     LDX   #16
+  0018 4f       CLRA  
+  0019 cd0000   JSR   OSD_SendWord
+   52:     OSD_SendWord (0xdb);
+  001c 5f       CLRX  
+  001d a6db     LDA   #-37
+  001f cd0000   JSR   OSD_SendWord
+   53:     OSD_SendWord (0x1000);		//Reset del OSD
+  0022 ae10     LDX   #16
+  0024 4f       CLRA  
+  0025 cd0000   JSR   OSD_SendWord
+   54:  
+   55:     OSD_SendWord (CONTROL_REGISTER);
+  0028 5f       CLRX  
+  0029 a6ce     LDA   #-50
+  002b cd0000   JSR   OSD_SendWord
+   56:     OSD_SendWord (DATA_REGISTER | 0xb8e);
+  002e ae1b     LDX   #27
+  0030 a68e     LDA   #-114
+  0032 cd0000   JSR   OSD_SendWord
+   57:  
+   58:     OSD_SendWord (MODE_REGISTER);
+  0035 5f       CLRX  
+  0036 a6d0     LDA   #-48
+  0038 cd0000   JSR   OSD_SendWord
+   59:     OSD_SendWord (DATA_REGISTER| 0x04);
+  003b ae10     LDX   #16
+  003d a604     LDA   #4
+  003f cd0000   JSR   OSD_SendWord
+   60:  
+   61:     OSD_SendWord (ZOOM_REGISTER);
+  0042 5f       CLRX  
+  0043 a6cc     LDA   #-52
+  0045 cd0000   JSR   OSD_SendWord
+   62:     OSD_SendWord (DATA_REGISTER| 0x0);
+  0048 ae10     LDX   #16
+  004a 4f       CLRA  
+  004b cd0000   JSR   OSD_SendWord
+   63:  
+   64:     OSD_SendWord (COLOR_REGISTER);
+  004e 5f       CLRX  
+  004f a6cd     LDA   #-51
+  0051 cd0000   JSR   OSD_SendWord
+   65:     OSD_SendWord (DATA_REGISTER | 0x482);
+  0054 ae14     LDX   #20
+  0056 a682     LDA   #-126
+  0058 cd0000   JSR   OSD_SendWord
+   66:  
+   67:  
+   68:     for (n=0;n<11 ;n++ )
+  005b 3f00     CLR   __OVL_9_OSD_Reset_n
+   69:     {
+   70:         OSD_SendWord (ROW_ATTRIBUTES| n);
+  005d b600     LDA   __OVL_9_OSD_Reset_n
+  005f aac0     ORA   #-64
+  0061 5f       CLRX  
+  0062 cd0000   JSR   OSD_SendWord
+   71:         OSD_SendWord (DATA_REGISTER | 0x0c0);
+  0065 ae10     LDX   #16
+  0067 a6c0     LDA   #-64
+  0069 cd0000   JSR   OSD_SendWord
+  006c 3c00     INC   __OVL_9_OSD_Reset_n
+  006e b600     LDA   __OVL_9_OSD_Reset_n
+  0070 a10b     CMP   #11
+  0072 25e9     BCS   *-21 ;abs = 005d
+   72:     }
+   73:  
+   74:     for (n=0;n<11 ;n++ )
+  0074 3f00     CLR   __OVL_9_OSD_Reset_n
+   75:     {
+   76:         for (i=0;i<28;i++)
+  0076 3f00     CLR   __OVL_9_OSD_Reset_i
+   77:         {
+   78:             buff=n<<8;
+  0078 b600     LDA   __OVL_9_OSD_Reset_n
+  007a 5f       CLRX  
+  007b b700     STA   _R_Z
+  007d a608     LDA   #8
+  007f b700     STA   _R_Y
+  0081 b600     LDA   _R_Z
+  0083 cd0000   JSR   _ILSL
+  0086 b701     STA   __OVL_9_OSD_Reset_buff:1
+  0088 bf00     STX   __OVL_9_OSD_Reset_buff
+   79:             buff|=i;
+  008a bf00     STX   __OVL_9_OSD_Reset_buff
+  008c b600     LDA   __OVL_9_OSD_Reset_i
+  008e ba01     ORA   __OVL_9_OSD_Reset_buff:1
+  0090 b701     STA   __OVL_9_OSD_Reset_buff:1
+   80:             OSD_SendWord (PAGE_ADDRESS| buff);
+  0092 cd0000   JSR   OSD_SendWord
+   81:             OSD_SendWord (DATA_REGISTER | 0x08b);
+  0095 ae10     LDX   #16
+  0097 a68b     LDA   #-117
+  0099 cd0000   JSR   OSD_SendWord
+  009c 3c00     INC   __OVL_9_OSD_Reset_i
+  009e b600     LDA   __OVL_9_OSD_Reset_i
+  00a0 a11c     CMP   #28
+  00a2 25d4     BCS   *-42 ;abs = 0078
+  00a4 3c00     INC   __OVL_9_OSD_Reset_n
+  00a6 b600     LDA   __OVL_9_OSD_Reset_n
+  00a8 a10b     CMP   #11
+  00aa 25ca     BCS   *-52 ;abs = 0076
+   82:         }
+   83:     }
+   84:  
+   85:    
+   86:  }
+  00ac 81       RTS   
+   87:  
+   88:  void OSD_FullMode (char mode)
+
+Function: OSD_FullMode
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b700     STA   __OVL_12_OSD_FullMode_p0
+   89:  {
+   90:  	u_mode._bits._PageMode = mode;
+  0002 000007   BRSET #0,__OVL_12_OSD_FullMode_p0,*10 ;abs = 000c
+  0005 c60000   LDA   u_mode
+  0008 a4fe     AND   #-2
+  000a 2005     BRA   *7 ;abs = 0011
+  000c c60000   LDA   u_mode
+  000f aa01     ORA   #1
+  0011 c70000   STA   u_mode
+   91:  	OSD_SendWord (CONTROL_REGISTER);
+  0014 5f       CLRX  
+  0015 a6ce     LDA   #-50
+  0017 cd0000   JSR   OSD_SendWord
+   92:      OSD_SendWord (DATA_REGISTER| u_mode._valor);
+  001a ae10     LDX   #16
+  001c c60000   LDA   u_mode
+  001f cc0000   JMP   OSD_SendWord
+   93:  }
+   94:  
+   95:  void OSD_CharMode (char mode)
+
+Function: OSD_CharMode
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b700     STA   __OVL_12_OSD_CharMode_p0
+   96:  {
+   97:  	u_mode._bits._CharMode = mode;
+  0002 000007   BRSET #0,__OVL_12_OSD_CharMode_p0,*10 ;abs = 000c
+  0005 c60000   LDA   u_mode
+  0008 a4fd     AND   #-3
+  000a 2005     BRA   *7 ;abs = 0011
+  000c c60000   LDA   u_mode
+  000f aa02     ORA   #2
+  0011 c70000   STA   u_mode
+   98:  	OSD_SendWord (CONTROL_REGISTER);
+  0014 5f       CLRX  
+  0015 a6ce     LDA   #-50
+  0017 cd0000   JSR   OSD_SendWord
+   99:      OSD_SendWord (DATA_REGISTER| u_mode._valor);
+  001a ae10     LDX   #16
+  001c c60000   LDA   u_mode
+  001f cc0000   JMP   OSD_SendWord
+  100:  }
+  101:  
+  102:  void OSD_DisplayOn (char display)
+
+Function: OSD_DisplayOn
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b700     STA   __OVL_13_OSD_DisplayOn_p0
+  103:  {
+  104:  	u_mode._bits._display = display;
+  0002 000007   BRSET #0,__OVL_13_OSD_DisplayOn_p0,*10 ;abs = 000c
+  0005 c60000   LDA   u_mode
+  0008 a4fb     AND   #-5
+  000a 2005     BRA   *7 ;abs = 0011
+  000c c60000   LDA   u_mode
+  000f aa04     ORA   #4
+  0011 c70000   STA   u_mode
+  105:  	OSD_SendWord (CONTROL_REGISTER);
+  0014 5f       CLRX  
+  0015 a6ce     LDA   #-50
+  0017 cd0000   JSR   OSD_SendWord
+  106:      OSD_SendWord (DATA_REGISTER| u_mode._valor);
+  001a ae10     LDX   #16
+  001c c60000   LDA   u_mode
+  001f cc0000   JMP   OSD_SendWord
+  107:  }
+  108:  
+  109:  void OSD_ColorMode (char mode)
+
+Function: OSD_ColorMode
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b700     STA   __OVL_13_OSD_ColorMode_p0
+  110:  {
+  111:  	u_mode._bits._c3 = mode;
+  0002 000007   BRSET #0,__OVL_13_OSD_ColorMode_p0,*10 ;abs = 000c
+  0005 c60000   LDA   u_mode
+  0008 a4f7     AND   #-9
+  000a 2005     BRA   *7 ;abs = 0011
+  000c c60000   LDA   u_mode
+  000f aa08     ORA   #8
+  0011 c70000   STA   u_mode
+  112:  	OSD_SendWord (CONTROL_REGISTER);
+  0014 5f       CLRX  
+  0015 a6ce     LDA   #-50
+  0017 cd0000   JSR   OSD_SendWord
+  113:      OSD_SendWord (DATA_REGISTER| u_mode._valor);
+  001a ae10     LDX   #16
+  001c c60000   LDA   u_mode
+  001f cc0000   JMP   OSD_SendWord
+  114:  }
+  115:  
+  116:  void OSD_BlinkOption (char option)
+
+Function: OSD_BlinkOption
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b700     STA   __OVL_15_OSD_BlinkOption_p0
+  117:  {
+  118:  	u_mode._bits._BlinkOpt = option;
+  0002 000007   BRSET #0,__OVL_15_OSD_BlinkOption_p0,*10 ;abs = 000c
+  0005 c60000   LDA   u_mode
+  0008 a4ef     AND   #-17
+  000a 2005     BRA   *7 ;abs = 0011
+  000c c60000   LDA   u_mode
+  000f aa10     ORA   #16
+  0011 c70000   STA   u_mode
+  119:  	OSD_SendWord (CONTROL_REGISTER);
+  0014 5f       CLRX  
+  0015 a6ce     LDA   #-50
+  0017 cd0000   JSR   OSD_SendWord
+  120:      OSD_SendWord (DATA_REGISTER| u_mode._valor);
+  001a ae10     LDX   #16
+  001c c60000   LDA   u_mode
+  001f cc0000   JMP   OSD_SendWord
+  121:  }
+  122:  
+  123:  void OSD_BlinkPeriod (char period)
+  124:  {
+  125:  	u_mode._bits._BlinkPeriod = period;
+
+Function: OSD_BlinkPeriod
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 48       LSLA  
+  0001 48       LSLA  
+  0002 48       LSLA  
+  0003 48       LSLA  
+  0004 48       LSLA  
+  0005 c80000   EOR   u_mode
+  0008 a460     AND   #96
+  000a c80000   EOR   u_mode
+  000d c70000   STA   u_mode
+  126:  	OSD_SendWord (CONTROL_REGISTER);
+  0010 5f       CLRX  
+  0011 a6ce     LDA   #-50
+  0013 cd0000   JSR   OSD_SendWord
+  127:      OSD_SendWord (DATA_REGISTER| u_mode._valor);
+  0016 ae10     LDX   #16
+  0018 c60000   LDA   u_mode
+  001b cc0000   JMP   OSD_SendWord
+  128:  }
+  129:  
+  130:  void OSD_SyncMode (char mode)
+
+Function: OSD_SyncMode
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b700     STA   __OVL_12_OSD_SyncMode_p0
+  131:  {
+  132:  	u_mode._bits._sync = mode;
+  0002 000007   BRSET #0,__OVL_12_OSD_SyncMode_p0,*10 ;abs = 000c
+  0005 c60000   LDA   u_mode
+  0008 a47f     AND   #127
+  000a 2005     BRA   *7 ;abs = 0011
+  000c c60000   LDA   u_mode
+  000f aa80     ORA   #-128
+  0011 c70000   STA   u_mode
+  133:  	OSD_SendWord (CONTROL_REGISTER);
+  0014 5f       CLRX  
+  0015 a6ce     LDA   #-50
+  0017 cd0000   JSR   OSD_SendWord
+  134:      OSD_SendWord (DATA_REGISTER| u_mode._valor);
+  001a ae10     LDX   #16
+  001c c60000   LDA   u_mode
+  001f cc0000   JMP   OSD_SendWord
+  135:  }
+  136:  
+  137:  void OSD_StandarType (char type)
+
+Function: OSD_StandarType
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b700     STA   __OVL_15_OSD_StandarType_p0
+  138:  {
+  139:  	u_mode._bits._standard = type;
+  0002 000007   BRSET #0,__OVL_15_OSD_StandarType_p0,*10 ;abs = 000c
+  0005 c60001   LDA   u_mode:1
+  0008 a4fe     AND   #-2
+  000a 2005     BRA   *7 ;abs = 0011
+  000c c60001   LDA   u_mode:1
+  000f aa01     ORA   #1
+  0011 c70001   STA   u_mode:1
+  140:  	OSD_SendWord (CONTROL_REGISTER);
+  0014 5f       CLRX  
+  0015 a6ce     LDA   #-50
+  0017 cd0000   JSR   OSD_SendWord
+  141:      OSD_SendWord (DATA_REGISTER| u_mode._valor);
+  001a ae10     LDX   #16
+  001c c60000   LDA   u_mode
+  001f cc0000   JMP   OSD_SendWord
+  142:  }
+  143:  
+  144:  void OSD_ColorEncoder (char encoder)
+
+Function: OSD_ColorEncoder
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b700     STA   __OVL_16_OSD_ColorEncoder_p0
+  145:  {
+  146:  	u_mode._bits._ColorEnc = encoder;
+  0002 000007   BRSET #0,__OVL_16_OSD_ColorEncoder_p0,*10 ;abs = 000c
+  0005 c60001   LDA   u_mode:1
+  0008 a4fd     AND   #-3
+  000a 2005     BRA   *7 ;abs = 0011
+  000c c60001   LDA   u_mode:1
+  000f aa02     ORA   #2
+  0011 c70001   STA   u_mode:1
+  147:  	OSD_SendWord (CONTROL_REGISTER);
+  0014 5f       CLRX  
+  0015 a6ce     LDA   #-50
+  0017 cd0000   JSR   OSD_SendWord
+  148:      OSD_SendWord (DATA_REGISTER| u_mode._valor);
+  001a ae10     LDX   #16
+  001c c60000   LDA   u_mode
+  001f cc0000   JMP   OSD_SendWord
+  149:  }
+  150:  
+  151:  void OSD_LuminanceLevels (char levels)
+
+Function: OSD_LuminanceLevels
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b700     STA   __OVL_19_OSD_LuminanceLevels_p0
+  152:  {
+  153:  	u_mode._bits._luminance = levels;
+  0002 000007   BRSET #0,__OVL_19_OSD_LuminanceLevels_p0,*10 ;abs = 000c
+  0005 c60001   LDA   u_mode:1
+  0008 a4fb     AND   #-5
+  000a 2005     BRA   *7 ;abs = 0011
+  000c c60001   LDA   u_mode:1
+  000f aa04     ORA   #4
+  0011 c70001   STA   u_mode:1
+  154:  	OSD_SendWord (CONTROL_REGISTER);
+  0014 5f       CLRX  
+  0015 a6ce     LDA   #-50
+  0017 cd0000   JSR   OSD_SendWord
+  155:      OSD_SendWord (DATA_REGISTER| u_mode._valor);
+  001a ae10     LDX   #16
+  001c c60000   LDA   u_mode
+  001f cc0000   JMP   OSD_SendWord
+  156:  }
+  157:  
+  158:  void OSD_VideoFullPageMode (char mode)
+
+Function: OSD_VideoFullPageMode
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b700     STA   __OVL_21_OSD_VideoFullPageMode_p0
+  159:  {
+  160:  	u_mode._bits._VideoFullPage = mode;
+  0002 000007   BRSET #0,__OVL_21_OSD_VideoFullPageMode_p0,*10 ;abs = 000c
+  0005 c60001   LDA   u_mode:1
+  0008 a4f7     AND   #-9
+  000a 2005     BRA   *7 ;abs = 0011
+  000c c60001   LDA   u_mode:1
+  000f aa08     ORA   #8
+  0011 c70001   STA   u_mode:1
+  161:  	OSD_SendWord (CONTROL_REGISTER);
+  0014 5f       CLRX  
+  0015 a6ce     LDA   #-50
+  0017 cd0000   JSR   OSD_SendWord
+  162:      OSD_SendWord (DATA_REGISTER| u_mode._valor);
+  001a ae10     LDX   #16
+  001c c60000   LDA   u_mode
+  001f cc0000   JMP   OSD_SendWord
+  163:  }
+  164:  
+  165:  void OSD_SendWord (int word)
+
+Function: OSD_SendWord
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b701     STA   __OVL_12_OSD_SendWord_p0:1
+  0002 bf00     STX   __OVL_12_OSD_SendWord_p0
+  166:  {
+  167:  	char n;
+  168:  	OSD_PORT &= ~BIT_OSD_CSU;
+  0004 1701     BCLR  #3,RegsHC05:1
+  169:  
+  170:  	for (n=0;n<16 ;n++ )
+  0006 3f00     CLR   __OVL_12_OSD_SendWord_n
+  171:  	{
+  172:  		if (word & 0x8000)
+  0008 0f0004   BRCLR #7,__OVL_12_OSD_SendWord_p0,*7 ;abs = 000f
+  173:  			OSD_PORT |=BIT_OSD_DATA;
+  000b 1201     BSET  #1,RegsHC05:1
+  000d 2002     BRA   *4 ;abs = 0011
+  174:  		else
+  175:  			 OSD_PORT &= ~BIT_OSD_DATA;
+  000f 1301     BCLR  #1,RegsHC05:1
+  176:  
+  177:  		OSD_PORT &=~BIT_OSD_CLOCK;
+  0011 1501     BCLR  #2,RegsHC05:1
+  178:  		OSD_PORT |=BIT_OSD_CLOCK;
+  0013 1401     BSET  #2,RegsHC05:1
+  179:  
+  180:  		word = word << 1;	
+  0015 3801     LSL   __OVL_12_OSD_SendWord_p0:1
+  0017 3900     ROL   __OVL_12_OSD_SendWord_p0
+  0019 3c00     INC   __OVL_12_OSD_SendWord_n
+  001b b600     LDA   __OVL_12_OSD_SendWord_n
+  001d a110     CMP   #16
+  001f 25e7     BCS   *-23 ;abs = 0008
+  181:  	}
+  182:  	OSD_PORT |= BIT_OSD_CSU;
+  0021 1601     BSET  #3,RegsHC05:1
+  183:  }
+  0023 81       RTS   
+  184:  
+  185:  
+  186:  void OSD_ScreenPos (char hor, char vert)
+
+Function: OSD_ScreenPos
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 bf00     STX   __OVL_13_OSD_ScreenPos_p1
+  187:  {
+  188:     int tmp;
+  189:  
+  190:     tmp = vert;
+  0002 b701     STA   __OVL_13_OSD_ScreenPos_tmp:1
+  0004 5f       CLRX  
+  0005 3f00     CLR   __OVL_13_OSD_ScreenPos_tmp
+  191:     tmp<<=6;
+  0007 b700     STA   _R_Z
+  0009 a606     LDA   #6
+  000b b700     STA   _R_Y
+  000d b600     LDA   _R_Z
+  000f cd0000   JSR   _ILSL
+  0012 b701     STA   __OVL_13_OSD_ScreenPos_tmp:1
+  0014 bf00     STX   __OVL_13_OSD_ScreenPos_tmp
+  192:     tmp|=hor;
+  0016 bf00     STX   __OVL_13_OSD_ScreenPos_tmp
+  0018 b600     LDA   __OVL_13_OSD_ScreenPos_p1
+  001a ba01     ORA   __OVL_13_OSD_ScreenPos_tmp:1
+  001c b701     STA   __OVL_13_OSD_ScreenPos_tmp:1
+  193:     OSD_SendWord (POSITION_REGISTER);
+  001e 5f       CLRX  
+  001f a6cf     LDA   #-49
+  0021 cd0000   JSR   OSD_SendWord
+  0024 b600     LDA   __OVL_13_OSD_ScreenPos_tmp
+  194:     OSD_SendWord (DATA_REGISTER| tmp);
+  0026 aa10     ORA   #16
+  0028 97       TAX   
+  0029 b601     LDA   __OVL_13_OSD_ScreenPos_tmp:1
+  002b cc0000   JMP   OSD_SendWord
+  195:  }
+  196:  
+  197:  void OSD_TextPos (char x, char y)
+
+Function: OSD_TextPos
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 bf00     STX   __OVL_11_OSD_TextPos_p1
+  198:  {
+  199:  	int iCol = y<<8;
+  0002 5f       CLRX  
+  0003 b700     STA   _R_Z
+  0005 a608     LDA   #8
+  0007 b700     STA   _R_Y
+  0009 b600     LDA   _R_Z
+  000b cd0000   JSR   _ILSL
+  000e b701     STA   __OVL_11_OSD_TextPos_iCol:1
+  0010 bf00     STX   __OVL_11_OSD_TextPos_iCol
+  200:  
+  201:      OSD_SendWord ((PAGE_ADDRESS|iCol)|x);
+  0012 b600     LDA   __OVL_11_OSD_TextPos_p1
+  0014 ba01     ORA   __OVL_11_OSD_TextPos_iCol:1
+  0016 cc0000   JMP   OSD_SendWord
+  202:  }
+  203:  
+  204:  void OSD_PrintStr (char *str)
+
+Function: OSD_PrintStr
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 b701     STA   __OVL_12_OSD_PrintStr_p0:1
+  0002 bf00     STX   __OVL_12_OSD_PrintStr_p0
+  205:  {
+  206:  	char car;
+  207:      while (*str!=0)
+  0004 202d     BRA   *47 ;abs = 0033
+  208:      {
+  209:          for (car=0;car<90;car++)
+  0006 3f00     CLR   __OVL_12_OSD_PrintStr_car
+  210:          {
+  211:              if (tabla[car]==*str)
+  0008 be00     LDX   __OVL_12_OSD_PrintStr_car
+  000a d60000   LDA   tabla,X
+  000d b700     STA   __OVL_12_OSD_PrintStr_spill0
+  000f b601     LDA   __OVL_12_OSD_PrintStr_p0:1
+  0011 b702     STA   _LEX:2
+  0013 b600     LDA   __OVL_12_OSD_PrintStr_p0
+  0015 b701     STA   _LEX:1
+  0017 5f       CLRX  
+  0018 bd00     JSR   _LEX
+  001a b100     CMP   __OVL_12_OSD_PrintStr_spill0
+  001c 2708     BEQ   *10 ;abs = 0026
+  001e 3c00     INC   __OVL_12_OSD_PrintStr_car
+  0020 b600     LDA   __OVL_12_OSD_PrintStr_car
+  0022 a15a     CMP   #90
+  0024 25e2     BCS   *-28 ;abs = 0008
+  212:                 break;
+  213:          }
+  214:          OSD_SendWord (DATA_REGISTER|car);
+  0026 ae10     LDX   #16
+  0028 b600     LDA   __OVL_12_OSD_PrintStr_car
+  002a cd0000   JSR   OSD_SendWord
+  215:  		str++;
+  002d 3c01     INC   __OVL_12_OSD_PrintStr_p0:1
+  002f 2602     BNE   *4 ;abs = 0033
+  0031 3c00     INC   __OVL_12_OSD_PrintStr_p0
+  0033 b601     LDA   __OVL_12_OSD_PrintStr_p0:1
+  0035 b702     STA   _LEX:2
+  0037 be00     LDX   __OVL_12_OSD_PrintStr_p0
+  0039 bf01     STX   _LEX:1
+  003b 5f       CLRX  
+  003c bd00     JSR   _LEX
+  003e 4d       TSTA  
+  003f 26c5     BNE   *-57 ;abs = 0006
+  216:      }
+  217:  }
+  0041 81       RTS   
+  218:  
+  219:  void OSD_PrintChar (char ch, char mode)
+
+Function: OSD_PrintChar
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 bf00     STX   __OVL_13_OSD_PrintChar_p1
+  0002 b700     STA   __OVL_13_OSD_PrintChar_p0
+  220:  {
+  221:  	char car;
+  222:  	for (car=0;car<90;car++)
+  0004 3f00     CLR   __OVL_13_OSD_PrintChar_car
+  223:  	{
+  224:  	   if (tabla[car]==ch)
+  0006 be00     LDX   __OVL_13_OSD_PrintChar_car
+  0008 d60000   LDA   tabla,X
+  000b b100     CMP   __OVL_13_OSD_PrintChar_p1
+  000d 2708     BEQ   *10 ;abs = 0017
+  000f 3c00     INC   __OVL_13_OSD_PrintChar_car
+  0011 b600     LDA   __OVL_13_OSD_PrintChar_car
+  0013 a15a     CMP   #90
+  0015 25ef     BCS   *-15 ;abs = 0006
+  225:  		  break;
+  226:  	}
+  227:  	car|=mode;
+  0017 b600     LDA   __OVL_13_OSD_PrintChar_car
+  0019 ba00     ORA   __OVL_13_OSD_PrintChar_p0
+  001b b700     STA   __OVL_13_OSD_PrintChar_car
+  228:      OSD_SendWord (DATA_REGISTER|car);
+  001d ae10     LDX   #16
+  001f cc0000   JMP   OSD_SendWord
+  229:  }
+  230:  
+  231:  void OSD_PrintExChar (char ch, char mode)
+
+Function: OSD_PrintExChar
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 bf00     STX   __OVL_15_OSD_PrintExChar_p1
+  0002 b700     STA   __OVL_15_OSD_PrintExChar_p0
+  232:  {
+  233:  	ch|=mode;
+  0004 b600     LDA   __OVL_15_OSD_PrintExChar_p1
+  0006 ba00     ORA   __OVL_15_OSD_PrintExChar_p0
+  0008 b700     STA   __OVL_15_OSD_PrintExChar_p1
+  234:      OSD_SendWord (DATA_REGISTER|ch);
+  000a ae10     LDX   #16
+  000c cc0000   JMP   OSD_SendWord

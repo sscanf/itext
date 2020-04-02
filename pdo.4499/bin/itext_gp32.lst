@@ -1,0 +1,229 @@
+ANSI-C/cC++ Compiler for HC08 V-5.0.17, Apr 22 2003
+
+    1:  /*
+    2:  ** ###################################################################
+    3:  **
+    4:  **     Filename  : itext_gp32.C
+    5:  **
+    6:  **     Project   : itext_gp32
+    7:  ** 
+    8:  **     Processor : MC68HC908GP32CFB
+    9:  **
+   10:  **     Version   : Driver 01.04
+   11:  **
+   12:  **     Compiler  : Metrowerks HC08 C Compiler
+   13:  **
+   14:  **     Date/Time : 29/12/05, 9:18
+   15:  **
+   16:  **     Abstract  :
+   17:  **
+   18:  **         Main module. 
+   19:  **         Here is to be placed user's code.
+   20:  **
+   21:  **     Settings  :
+   22:  **
+   23:  **
+   24:  **     Contents  :
+   25:  **
+   26:  **         No public methods
+   27:  **
+   28:  **
+   29:  **     (c) Copyright UNIS, spol. s r.o. 1997-2002
+   30:  **
+   31:  **     UNIS, spol. s r.o.
+   32:  **     Jundrovska 33
+   33:  **     624 00 Brno
+   34:  **     Czech Republic
+   35:  **
+   36:  **     http      : www.processorexpert.com
+   37:  **     mail      : info@processorexpert.com
+   38:  **
+   39:  ** ###################################################################
+   40:  */
+   41:  /* MODULE itext_gp32 */
+   42:  
+   43:  
+   44:  /* Including used modules for compilling procedure */
+   45:  #include "Cpu.h"
+   46:  #include "Events.h"
+   47:  #include "osd.h"
+   48:  /* Include shared modules, which are used for whole project */
+   49:  #include "PE_Types.h"
+   50:  #include "PE_Error.h"
+   51:  #include "PE_Const.h"
+   52:  #include "IO_Map.h"
+   53:  #include "delay.h"
+   54:  #include <string.h>.
+   55:  //                 ............................|...........................|......................
+   56:  const char str[]={"ESTO ES UNA DEMOSTRACION DE UN TEXTO CON DESPLAZAMIENTO HACIA LA IZQUIERDA .... "};
+   57:  char buff[29];
+   58:  
+   59:  void main(void)
+   60:  {
+
+Function: main
+Source  : Z:\itext\pdo.4499\Code\itext_gp32.C
+Options : -Env"GENPATH=Z:\itext\pdo.4499;Z:\itext\pdo.4499\bin;Z:\itext\pdo.4499\prm;Z:\itext\pdo.4499\cmd;Z:\itext\pdo.4499\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\pdo.4499\Code;Z:\itext\pdo.4499\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\pdo.4499\bin -EnvTEXTPATH=Z:\itext\pdo.4499\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\pdo.4499\itext-gp32_Data\P&E_FCS\ObjectCode\itext_gp32.C.o -WmsgSd1106
+
+  0000 a7fc             AIS   #-4
+   61:  	char n;
+   62:  	char head=0;
+   63:  	char tail=0;
+   64:  	
+   65:    /*** Processor Expert internal initialization. DON'T REMOVE THIS CODE!!! ***/
+   66:    PE_low_level_init();
+  0002 cd0000           JSR   PE_low_level_init
+   67:    /*** End of Processor Expert internal initialization.                    ***/
+   68:  		DDRD = 0xff;
+  0005 6eff00           MOV   #-1,_DDRD
+   69:  		DDRB = 0xfe;
+  0008 6efe00           MOV   #-2,_DDRB
+   70:  		OSD_CTRL_PORT |= BIT_OSD_CSU;
+  000b 1200             BSET  1,_PTB
+   71:  		OSD_SERIAL_PORT |=BIT_OSD_CLOCK;
+  000d 1600             BSET  3,_PTD
+   72:  		
+   73:  		
+   74:  		OSD_Reset();
+  000f cd0000           JSR   OSD_Reset
+   75:  		OSD_ScreenPos (20,40); // OSD_ScreenPos (6,2);
+  0012 a614             LDA   #20
+  0014 ae28             LDX   #40
+  0016 cd0000           JSR   OSD_ScreenPos
+   76:  		OSD_CharMode (10);
+  0019 a60a             LDA   #10
+  001b cd0000           JSR   OSD_CharMode
+   77:  		OSD_FullMode (FALSE);
+  001e 4f               CLRA  
+  001f cd0000           JSR   OSD_FullMode
+   78:  		OSD_VideoFullPageMode (FALSE);
+  0022 4f               CLRA  
+  0023 cd0000           JSR   OSD_VideoFullPageMode
+   79:  
+   80:    	OSD_TextPos (0,10);
+  0026 4f               CLRA  
+  0027 ae0a             LDX   #10
+  0029 cd0000           JSR   OSD_TextPos
+   81:    	OSD_PrintStr (str);	//Presentamos el texto durante 1 segundo antes de hacer
+  002c a600             LDA   @str
+  002e ae00             LDX   @str:MSB
+  0030 cd0000           JSR   OSD_PrintStr
+  0033 ad69             BSR   L9E ;abs = 009e
+  0035 ad67             BSR   L9E ;abs = 009e
+  0037 ad65             BSR   L9E ;abs = 009e
+  0039 ad63             BSR   L9E ;abs = 009e
+   82:    	delay_ms (255);			//desplazamiento
+   83:    	delay_ms (255);
+   84:    	delay_ms (255);
+   85:    	delay_ms (255);
+   86:    	
+   87:  		head=0;
+  003b 95               TSX   
+  003c 6f01             CLR   1,X
+  003e          L3E:    
+   88:  		while (TRUE)
+   89:  		{		
+   90:  		  	OSD_TextPos (0,10);
+  003e 4f               CLRA  
+  003f ae0a             LDX   #10
+  0041 cd0000           JSR   OSD_TextPos
+   91:  	
+   92:  				tail=head;
+  0044 95               TSX   
+  0045 e601             LDA   1,X
+  0047 e703             STA   3,X
+   93:  				for (n=0;n<28;n++)
+  0049 6f02             CLR   2,X
+  004b          L4B:    
+   94:  				{
+   95:  					buff[n]=str[head++];
+  004b e601             LDA   1,X
+  004d 97               TAX   
+  004e 4c               INCA  
+  004f 9ee702           STA   2,SP
+  0052 8c               CLRH  
+  0053 d60000           LDA   @str,X
+  0056 9eee03           LDX   3,SP
+  0059 d70000           STA   @buff,X
+   96:  					if (head>strlen (str)-1)
+  005c a600             LDA   @str
+  005e ae00             LDX   @str:MSB
+  0060 cd0000           JSR   strlen
+  0063 4d               TSTA  
+  0064 2601             BNE   L67 ;abs = 0067
+  0066 5a               DECX  
+  0067          L67:    
+  0067 4a               DECA  
+  0068 ad3a             BSR   LA4 ;abs = 00a4
+  006a 2403             BCC   L6F ;abs = 006f
+   97:  					 head=0;
+  006c 95               TSX   
+  006d 6f01             CLR   1,X
+  006f          L6F:    
+  006f 95               TSX   
+  0070 6c02             INC   2,X
+  0072 e602             LDA   2,X
+  0074 a11c             CMP   #28
+  0076 25d3             BCS   L4B ;abs = 004b
+   98:  				}
+   99:  				
+  100:  				head=tail+1;
+  0078 e603             LDA   3,X
+  007a 4c               INCA  
+  007b e701             STA   1,X
+  101:  				if (head>strlen (str)) head=0;
+  007d a600             LDA   @str
+  007f ae00             LDX   @str:MSB
+  0081 cd0000           JSR   strlen
+  0084 ad1e             BSR   LA4 ;abs = 00a4
+  0086 2403             BCC   L8B ;abs = 008b
+  0088 95               TSX   
+  0089 6f01             CLR   1,X
+  008b          L8B:    
+  102:  				
+  103:  				buff[29]=0;
+  008b 4f               CLRA  
+  008c c7001d           STA   buff:29
+  104:  		  	OSD_PrintStr (buff);
+  008f a600             LDA   @buff
+  0091 ae00             LDX   @buff:MSB
+  0093 cd0000           JSR   OSD_PrintStr
+  105:  		  	delay_ms (50);
+  0096 a632             LDA   #50
+  0098 5f               CLRX  
+  0099 cd0000           JSR   delay_ms
+  009c 20a0             BRA   L3E ;abs = 003e
+  009e          L9E:    
+  009e a6ff             LDA   #-1
+  00a0 5f               CLRX  
+  00a1 cc0000           JMP   delay_ms
+  00a4          LA4:    
+  00a4 9ee703           STA   3,SP
+  00a7 9ee604           LDA   4,SP
+  00aa 87               PSHA  
+  00ab 4f               CLRA  
+  00ac 87               PSHA  
+  00ad 9ee605           LDA   5,SP
+  00b0 cd0000           JSR   _ICMP
+  00b3 81               RTS   
+  106:  		}
+  107:  
+  108:  
+  109:  #ifndef PE_OS_OSEK_SUPPORT
+  110:    for(;;){}
+  111:  #else
+  112:    StartOS(Mode);                       /* Jump to OSEKturbo OS startup */
+  113:    /*DO NOT WRITE CODE BELOW THIS LINE*/
+  114:  #endif PE_OS_OSEK_SUPPORT
+  115:  }
+  116:  
+  117:  /* END itext_gp32 */
+  118:  /*
+  119:  ** ###################################################################
+  120:  **
+  121:  **     This file was created by UNIS Processor Expert 03.23 for 
+  122:  **     the Motorola HC08 series of microcontrollers.
+  123:  **
+  124:  ** ###################################################################
+  125:  */
+  126:  

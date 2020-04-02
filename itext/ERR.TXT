@@ -1,0 +1,22 @@
+
+>> in "Z:\mnt\program_projects\itext\itext\main.c", line 4, col 10, pos 62
+#include <stdlib.h>
+         ^
+ERROR C5200: stdlib.h file not found
+
+>> in "Z:\mnt\program_projects\itext\itext\main.c", line 5, col 10, pos 83
+#include <hidef.h>
+         ^
+ERROR C5200: hidef.h file not found
+
+>> in "Z:\mnt\program_projects\itext\itext\main.c", line 6, col 10, pos 103
+#include <ctype.h>
+         ^
+ERROR C5200: ctype.h file not found
+
+>> in "Z:\mnt\program_projects\itext\itext\main.c", line 8, col 10, pos 125
+#include <hc05c2_r.h>
+         ^
+ERROR C5200: hc05c2_r.h file not found
+ERROR *** 4 error(s), 0 warning(s), 0 information message(s) ***
+ERROR *** Error occured while processing! ***

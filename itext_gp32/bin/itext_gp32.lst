@@ -1,0 +1,267 @@
+ANSI-C/cC++ Compiler for HC08 V-5.0.17, Apr 22 2003
+
+    1:  /*
+    2:  ** ###################################################################
+    3:  **
+    4:  **     Filename  : itext_gp32.C
+    5:  **
+    6:  **     Project   : itext_gp32
+    7:  ** 
+    8:  **     Processor : MC68HC908GP32CFB
+    9:  **
+   10:  **     Version   : Driver 01.04
+   11:  **
+   12:  **     Compiler  : Metrowerks HC08 C Compiler
+   13:  **
+   14:  **     Date/Time : 29/12/05, 9:18
+   15:  **
+   16:  **     Abstract  :
+   17:  **
+   18:  **         Main module. 
+   19:  **         Here is to be placed user's code.
+   20:  **
+   21:  **     Settings  :
+   22:  **
+   23:  **
+   24:  **     Contents  :
+   25:  **
+   26:  **         No public methods
+   27:  **
+   28:  **
+   29:  **     (c) Copyright UNIS, spol. s r.o. 1997-2002
+   30:  **
+   31:  **     UNIS, spol. s r.o.
+   32:  **     Jundrovska 33
+   33:  **     624 00 Brno
+   34:  **     Czech Republic
+   35:  **
+   36:  **     http      : www.processorexpert.com
+   37:  **     mail      : info@processorexpert.com
+   38:  **
+   39:  ** ###################################################################
+   40:  */
+   41:  /* MODULE itext_gp32 */
+   42:  
+   43:  
+   44:  /* Including used modules for compilling procedure */
+   45:  #include "Cpu.h"
+   46:  #include "Events.h"
+   47:  #include "osd.h"
+   48:  /* Include shared modules, which are used for whole project */
+   49:  #include "PE_Types.h"
+   50:  #include "PE_Error.h"
+   51:  #include "PE_Const.h"
+   52:  #include "IO_Map.h"
+   53:  #include "delay.h"
+   54:  #include <stdio.h>
+   55:  #include <ctype.h>
+   56:  
+   57:  #define SHIFT_SH	PTB_PTB2
+   58:  
+   59:  
+   60:  unsigned int SerialIn (void)
+   61:  {
+
+Function: SerialIn
+Source  : Z:\itext\itext_gp32\Code\itext_gp32.C
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\itext_gp32.C.o -WmsgSd1106
+
+  0000 a7fd             AIS   #-3
+   62:  	unsigned int word=0;
+  0002 95               TSX   
+  0003 6f01             CLR   1,X
+  0005 7f               CLR   ,X
+   63:  	char n;
+   64:  
+   65:  	SHIFT_SH = FALSE;
+  0006 1500             BCLR  2,_PTB
+   66:  		OSD_SERIAL_PORT &=~BIT_OSD_CLOCK;
+  0008 1700             BCLR  3,_PTD
+   67:  		OSD_SERIAL_PORT |=BIT_OSD_CLOCK;
+  000a 1600             BSET  3,_PTD
+   68:  	SHIFT_SH = TRUE;
+  000c 1400             BSET  2,_PTB
+   69:  
+   70:  	for (n=0;n<16;n++ )
+  000e 6f02             CLR   2,X
+  0010          L10:    
+   71:  	{		
+   72:  		(word>>=1)&0x7fff;
+  0010 74               LSR   ,X
+  0011 6601             ROR   1,X
+   73:  
+   74:  		if (OSD_SERIAL_PORT & BIT_OSD_DATAIN)
+  0013 030004           BRCLR 1,_PTD,L1A ;abs = 001a
+   75:  			word |=0x8000;
+  0016 f6               LDA   ,X
+  0017 aa80             ORA   #-128
+  0019 f7               STA   ,X
+  001a          L1A:    
+   76:  
+   77:  		OSD_SERIAL_PORT &=~BIT_OSD_CLOCK;
+  001a 1700             BCLR  3,_PTD
+   78:  		OSD_SERIAL_PORT |=BIT_OSD_CLOCK;
+  001c 1600             BSET  3,_PTD
+  001e 6c02             INC   2,X
+  0020 e602             LDA   2,X
+  0022 a110             CMP   #16
+  0024 25ea             BCS   L10 ;abs = 0010
+   79:  			
+   80:  	}
+   81:  	return word;
+  0026 e601             LDA   1,X
+  0028 fe               LDX   ,X
+   82:  }
+  0029 a703             AIS   #3
+  002b 81               RTS   
+   83:  
+   84:  void main(void)
+   85:  {
+
+Function: main
+Source  : Z:\itext\itext_gp32\Code\itext_gp32.C
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\itext_gp32.C.o -WmsgSd1106
+
+  0000 a7f0             AIS   #-16
+   86:  	char strDigitos[10];
+   87:  	unsigned int dig;
+   88:  	byte digitos[4];
+   89:  
+   90:    /*** Processor Expert internal initialization. DON'T REMOVE THIS CODE!!! ***/
+   91:    PE_low_level_init();
+  0002 cd0000           JSR   PE_low_level_init
+   92:    /*** End of Processor Expert internal initialization.                    ***/	
+   93:  	
+   94:  	DDRD = 0xfd;
+  0005 6efd00           MOV   #-3,_DDRD
+   95:  	DDRB = 0xfe;
+  0008 6efe00           MOV   #-2,_DDRB
+   96:  	OSD_CTRL_PORT |= BIT_OSD_CSU;
+  000b 1200             BSET  1,_PTB
+   97:  	OSD_SERIAL_PORT |= BIT_OSD_CLOCK;
+  000d 1600             BSET  3,_PTD
+   98:  	SHIFT_SH = TRUE;
+  000f 1400             BSET  2,_PTB
+   99:  
+  100:  		
+  101:  		OSD_Reset();
+  0011 cd0000           JSR   OSD_Reset
+  102:  		OSD_ScreenPos (20,40); // OSD_ScreenPos (6,2);
+  0014 a614             LDA   #20
+  0016 ae28             LDX   #40
+  0018 cd0000           JSR   OSD_ScreenPos
+  103:  		OSD_CharMode (10);
+  001b a60a             LDA   #10
+  001d cd0000           JSR   OSD_CharMode
+  104:  		OSD_FullMode (FALSE);
+  0020 4f               CLRA  
+  0021 cd0000           JSR   OSD_FullMode
+  105:  		OSD_VideoFullPageMode (FALSE);		
+  0024 4f               CLRA  
+  0025 cd0000           JSR   OSD_VideoFullPageMode
+  0028          L28:    
+  106:  		
+  107:  		for (;;)
+  108:  		{
+  109:  			OSD_TextPos (0,10);
+  0028 4f               CLRA  
+  0029 ae0a             LDX   #10
+  002b cd0000           JSR   OSD_TextPos
+  110:  					
+  111:  			dig = SerialIn();
+  002e ad00             BSR   SerialIn
+  0030 9ee706           STA   6,SP
+  0033 9eef05           STX   5,SP
+  112:  
+  113:  			digitos[3]=HINIBBLE(HIBYTE(dig));	//1000
+  0036 9f               TXA   
+  0037 62               NSA   
+  0038 a40f             AND   #15
+  003a 9ee704           STA   4,SP
+  114:  			digitos[2]=LONIBBLE(HIBYTE(dig)); //100
+  003d 9f               TXA   
+  003e a40f             AND   #15
+  0040 95               TSX   
+  0041 e702             STA   2,X
+  115:  			digitos[1]=HINIBBLE(LOBYTE(dig)); //10
+  0043 e605             LDA   5,X
+  0045 62               NSA   
+  0046 a40f             AND   #15
+  0048 e701             STA   1,X
+  116:  			digitos[0]=LONIBBLE(LOBYTE(dig));	//1
+  004a e605             LDA   5,X
+  004c a40f             AND   #15
+  004e f7               STA   ,X
+  004f ad37             BSR   L88 ;abs = 0088
+  117:  			
+  118:  			
+  119:  			sprintf(strDigitos,"%d%d%d.%d M",
+  0051 87               PSHA  
+  0052 89               PSHX  
+  0053 95               TSX   
+  0054 e603             LDA   3,X
+  0056 ad30             BSR   L88 ;abs = 0088
+  0058 87               PSHA  
+  0059 89               PSHX  
+  005a 95               TSX   
+  005b e606             LDA   6,X
+  005d ad29             BSR   L88 ;abs = 0088
+  005f 87               PSHA  
+  0060 89               PSHX  
+  0061 95               TSX   
+  0062 e609             LDA   9,X
+  0064 ad22             BSR   L88 ;abs = 0088
+  0066 87               PSHA  
+  0067 89               PSHX  
+  0068 450000           LDHX  @"%d%d%d.%d M"
+  006b 89               PSHX  
+  006c 8b               PSHH  
+  006d 95               TSX   
+  006e af10             AIX   #16
+  0070 89               PSHX  
+  0071 8b               PSHH  
+  0072 cd0000           JSR   sprintf
+  0075 a70c             AIS   #12
+  120:  				digitos[3]%10,digitos[2]%10,digitos[1]%10,digitos[0]%10);
+  121:  			
+  122:  			OSD_PrintStr (strDigitos);
+  0077 95               TSX   
+  0078 af06             AIX   #6
+  007a 9f               TXA   
+  007b 8b               PSHH  
+  007c 88               PULX  
+  007d cd0000           JSR   OSD_PrintStr
+  123:  	  	delay_ms (50);
+  0080 a632             LDA   #50
+  0082 5f               CLRX  
+  0083 cd0000           JSR   delay_ms
+  0086 20a0             BRA   L28 ;abs = 0028
+  0088          L88:    
+  0088 87               PSHA  
+  0089 4f               CLRA  
+  008a 87               PSHA  
+  008b a60a             LDA   #10
+  008d 5f               CLRX  
+  008e cd0000           JSR   _IMODS
+  0091 a702             AIS   #2
+  0093 81               RTS   
+  124:  		}
+  125:  
+  126:  #ifndef PE_OS_OSEK_SUPPORT
+  127:    for(;;){}
+  128:  #else
+  129:    StartOS(Mode);                       /* Jump to OSEKturbo OS startup */
+  130:    /*DO NOT WRITE CODE BELOW THIS LINE*/
+  131:  #endif PE_OS_OSEK_SUPPORT
+  132:  }
+  133:  
+  134:  /* END itext_gp32 */
+  135:  /*
+  136:  ** ###################################################################
+  137:  **
+  138:  **     This file was created by UNIS Processor Expert 03.23 for 
+  139:  **     the Motorola HC08 series of microcontrollers.
+  140:  **
+  141:  ** ###################################################################
+  142:  */
+  143:  

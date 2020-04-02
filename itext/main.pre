@@ -1,0 +1,204 @@
+
+
+/**** FILE 'Z:\mnt\program_projects\itext\itext\main.c' */
+
+/*        1 */  #pragma CREATE_ASM_LISTING ON
+/*        2 */ 
+/*        3 */ 
+/*        4 */ 
+/*        5 */ 
+/*        6 */ 
+/*        7 */ 
+/*        8 */ 
+/*        9 */ 
+/*       10 */ 
+/*       11 */ 
+
+/**** FILE 'osd.h' */
+
+/*        1 */ 
+/*        2 */ 
+/*        3 */ 
+/*        4 */ 
+/*        5 */ 
+/*        6 */ 
+/*        7 */ 
+/*        8 */ 
+/*        9 */ 
+/*       10 */ 
+/*       11 */ 
+/*       12 */ 
+/*       13 */ 
+/*       14 */ 
+/*       15 */ 
+/*       16 */ 
+/*       17 */ 
+/*       18 */ 
+/*       19 */ 
+/*       20 */ 
+/*       21 */ 
+/*       22 */ 
+/*       23 */ 
+/*       24 */ 
+/*       25 */  void OSD_Reset ( void ) ;
+/*       26 */  void OSD_ScreenPos ( char hor , char vert ) ;
+/*       27 */  void OSD_TextPos ( char x , char y ) ;
+/*       28 */  void OSD_PrintStr ( char * str ) ;
+/*       29 */  void OSD_PrintChar ( char ch , char mode ) ;
+/*       30 */  void OSD_FullMode ( char mode ) ;
+/*       31 */  void OSD_CharMode ( char mode ) ;
+/*       32 */  void OSD_DisplayOn ( char display ) ;
+/*       33 */  void OSD_ColorMode ( char mode ) ;
+/*       34 */  void OSD_BlinkOption ( char option ) ;
+/*       35 */  void OSD_BlinkPeriod ( char period ) ;
+/*       36 */  void OSD_SyncMode ( char mode ) ;
+/*       37 */  void OSD_StandarType ( char type ) ;
+/*       38 */  void OSD_ColorEncoder ( char encoder ) ;
+/*       39 */  void OSD_LuminanceLevels ( char levels ) ;
+/*       40 */  void OSD_VideoFullPageMode ( char mode ) ;
+/*       41 */  void OSD_PrintExChar ( char ch , char mode ) ;
+/*       42 */ 
+/*       43 */ 
+/*       44 */ 
+
+/**** FILE 'Z:\mnt\program_projects\itext\itext\main.c' */
+
+/*       11 */ 
+/*       12 */  #pragma DATA_SEG SHORT DS_RegsHC05
+/*       13 */  TS_RegsHC05 RegsHC05 ;
+/*       14 */ 
+/*       15 */  #pragma DATA_SEG DEFAULT
+/*       16 */ 
+/*       17 */ 
+/*       18 */ 
+/*       19 */ 
+/*       20 */ 
+/*       21 */ 
+/*       22 */ 
+/*       23 */  extern char _SEX [ 4 ] , _LEX [ 4 ] , _JSR [ 3 ] ;
+/*       24 */ 
+/*       25 */ 
+/*       26 */ 
+/*       27 */  void DoCuc ( ) ;
+/*       28 */  void main ( )
+/*       29 */  {
+/*       30 */  }
+/*       31 */ 
+/*       32 */  extern __interrupt void SPI ( )
+/*       33 */  {
+/*       34 */  }
+/*       35 */ 
+/*       36 */  extern __interrupt void TIMER ( )
+/*       37 */  {
+/*       38 */  }
+/*       39 */ 
+/*       40 */  extern __interrupt void IRQ ( )
+/*       41 */  {
+/*       42 */  }
+/*       43 */ 
+/*       44 */  extern __interrupt void SWI ( )
+/*       45 */  {
+/*       46 */  }
+/*       47 */ 
+/*       48 */  extern __interrupt void SCI ( )
+/*       49 */  {
+/*       50 */  }
+/*       51 */ 
+/*       52 */  void reset ( )
+/*       53 */  {
+/*       54 */  ( * ( ( unsigned char * ) ( 0x1fdf ) ) ) = ( unsigned char ) 0xc2 ;
+/*       55 */ 
+/*       56 */ 
+/*       57 */  _LEX [ 0 ] = 0xD6 ; _LEX [ 3 ] = 0x81 ; _SEX [ 0 ] = 0xD7 ; _SEX [ 3 ] = 0x81 ;
+/*       58 */  _JSR [ 0 ] = 0xCC ;
+/*       59 */ 
+/*       60 */  DDRC = 0x83 ;
+/*       61 */  DDRA = 0xff ;
+/*       62 */  DDRB = 0xfe ;
+/*       63 */ 
+/*       64 */  PORTC = 0xff ;
+/*       65 */  OSD_Reset ( ) ;
+/*       66 */ 
+/*       67 */  OSD_ScreenPos ( 16 , 26 ) ;
+/*       68 */  OSD_FullMode ( FALSE ) ;
+/*       69 */  OSD_BlinkOption ( TRUE ) ;
+/*       70 */  OSD_BlinkPeriod ( 1 ) ;
+/*       71 */ 
+/*       72 */  OSD_TextPos ( 0 , 0 ) ;
+/*       73 */  OSD_PrintStr ( "1234567890123456789012345678" ) ;
+/*       74 */  OSD_PrintStr ( "2234567890123456789012345678" ) ;
+/*       75 */  OSD_PrintStr ( "3234567890123456789012345678" ) ;
+/*       76 */  OSD_PrintStr ( "4234567890123456789012345678" ) ;
+/*       77 */  OSD_PrintStr ( "5234567890123456789012345678" ) ;
+/*       78 */  OSD_PrintStr ( "6234567890123456789012345678" ) ;
+/*       79 */  OSD_PrintStr ( "7234567890123456789012345678" ) ;
+/*       80 */  OSD_PrintStr ( "8234567890123456789012345678" ) ;
+/*       81 */  OSD_PrintStr ( "9234567890123456789012345678" ) ;
+/*       82 */  OSD_PrintStr ( "0234567890123456789012345678" ) ;
+/*       83 */  OSD_PrintStr ( "1234567890123456789012345678" ) ;
+/*       84 */ 
+/*       85 */ 
+/*       86 */ 
+/*       87 */ 
+/*       88 */  for ( ; ; ) ;
+/*       89 */ 
+/*       90 */  }
+/*       91 */ 
+/*       92 */  void DoCuc ( )
+/*       93 */  {
+/*       94 */  char n ;
+/*       95 */  int constX ;
+/*       96 */  int constY ;
+/*       97 */  int i ;
+/*       98 */ 
+/*       99 */  char posX [ 7 ] ;
+/*      100 */  char posY [ 7 ] ;
+/*      101 */  char idx = 0 ;
+/*      102 */ 
+/*      103 */  for ( n = 0 ; n < 7 ; n ++ )
+/*      104 */  {
+/*      105 */  posX [ n ] = 0 ;
+/*      106 */  posY [ n ] = 0 ;
+/*      107 */  }
+/*      108 */ 
+/*      109 */  constX = 1 ;
+/*      110 */  constY = 1 ;
+/*      111 */  idx = 1 ;
+/*      112 */ 
+/*      113 */  while ( 1 )
+/*      114 */  {
+/*      115 */  OSD_TextPos ( posX [ 0 ] , posY [ 0 ] ) ;
+/*      116 */  OSD_PrintExChar ( 0x77 , 0 ) ;
+/*      117 */ 
+/*      118 */  posX [ idx ] = posX [ 0 ] ;
+/*      119 */  posY [ idx ] = posY [ 0 ] ;
+/*      120 */ 
+/*      121 */  if ( idx == 6 )
+/*      122 */  {
+/*      123 */  OSD_TextPos ( posX [ 1 ] , posY [ 1 ] ) ;
+/*      124 */  OSD_PrintStr ( " " ) ;
+/*      125 */ 
+/*      126 */  for ( n = 2 ; n < 6 + 1 ; n ++ )
+/*      127 */  {
+/*      128 */  posX [ n - 1 ] = posX [ n ] ;
+/*      129 */  posY [ n - 1 ] = posY [ n ] ;
+/*      130 */  }
+/*      131 */  idx = 6 ;
+/*      132 */ 
+/*      133 */  }
+/*      134 */  else
+/*      135 */  idx ++ ;
+/*      136 */ 
+/*      137 */  posX [ 0 ] += constX ;
+/*      138 */  posY [ 0 ] += constY ;
+/*      139 */ 
+/*      140 */  if ( posX [ 0 ] > 26 ) constX = - 1 ;
+/*      141 */  if ( posX [ 0 ] < 1 ) constX = 1 ;
+/*      142 */  if ( posY [ 0 ] > 9 ) constY = - 1 ;
+/*      143 */  if ( posY [ 0 ] < 1 ) constY = 1 ;
+/*      144 */ 
+/*      145 */  for ( i = 0 ; i < 3000 ; i ++ ) ;
+/*      146 */  }
+/*      147 */  }
+/*      148 */ 
+/*      149 */ 

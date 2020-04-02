@@ -1,0 +1,612 @@
+
+
+/**** FILE 'Z:\ITEXT\itext\osd.c' */
+
+/*        1 */ 
+/*        2 */ 
+
+/**** FILE 'osd.h' */
+
+/*        1 */ 
+/*        2 */ 
+
+/**** FILE 'hc05c2_r.h' */
+
+/*        1 */ 
+/*        2 */ 
+/*        3 */ 
+/*        4 */ 
+/*        5 */ 
+/*        6 */ 
+/*        7 */ 
+/*        8 */ 
+/*        9 */ 
+/*       10 */ 
+/*       11 */ 
+/*       12 */ 
+/*       13 */ 
+/*       14 */ 
+/*       15 */ 
+/*       16 */ 
+/*       17 */ 
+/*       18 */ 
+/*       19 */ 
+/*       20 */ 
+/*       21 */ 
+/*       22 */ 
+/*       23 */ 
+/*       24 */ 
+/*       25 */ 
+/*       26 */ 
+/*       27 */ 
+/*       28 */ 
+/*       29 */ 
+/*       30 */ 
+/*       31 */ 
+/*       32 */ 
+/*       33 */ 
+/*       34 */ 
+/*       35 */ 
+/*       36 */  typedef volatile struct {
+/*       37 */  union {
+/*       38 */  struct {
+/*       39 */  unsigned int _PA0 : 1 ;
+/*       40 */  unsigned int _PA1 : 1 ;
+/*       41 */  unsigned int _PA2 : 1 ;
+/*       42 */  unsigned int _PA3 : 1 ;
+/*       43 */  unsigned int _PA4 : 1 ;
+/*       44 */  unsigned int _PA5 : 1 ;
+/*       45 */  unsigned int _PA6 : 1 ;
+/*       46 */  unsigned int _PA7 : 1 ;
+/*       47 */  } bits_PORTA ;
+/*       48 */  unsigned char _PORTA ;
+/*       49 */  } U_PORTA ;
+/*       50 */ 
+/*       51 */  union {
+/*       52 */  struct {
+/*       53 */  unsigned int _PB0 : 1 ;
+/*       54 */  unsigned int _PB1 : 1 ;
+/*       55 */  unsigned int _PB2 : 1 ;
+/*       56 */  unsigned int _PB3 : 1 ;
+/*       57 */  unsigned int _PB4 : 1 ;
+/*       58 */  unsigned int _PB5 : 1 ;
+/*       59 */  unsigned int _PB6 : 1 ;
+/*       60 */  unsigned int _PB7 : 1 ;
+/*       61 */  } bits_PORTB ;
+/*       62 */  unsigned char _PORTB ;
+/*       63 */  } U_PORTB ;
+/*       64 */ 
+/*       65 */  union {
+/*       66 */  struct {
+/*       67 */  unsigned int _PC0 : 1 ;
+/*       68 */  unsigned int _PC1 : 1 ;
+/*       69 */  unsigned int _PC2 : 1 ;
+/*       70 */  unsigned int _PC3 : 1 ;
+/*       71 */  unsigned int _PC4 : 1 ;
+/*       72 */  unsigned int _PC5 : 1 ;
+/*       73 */  unsigned int _PC6 : 1 ;
+/*       74 */  unsigned int _PC7 : 1 ;
+/*       75 */  } bits_PORTC ;
+/*       76 */  unsigned char _PORTC ;
+/*       77 */  } U_PORTC ;
+/*       78 */ 
+/*       79 */  union {
+/*       80 */  struct {
+/*       81 */  unsigned int _PD0 : 1 ;
+/*       82 */  unsigned int _PD1 : 1 ;
+/*       83 */  unsigned int _PD2 : 1 ;
+/*       84 */  unsigned int _PD3 : 1 ;
+/*       85 */  unsigned int _PD4 : 1 ;
+/*       86 */  unsigned int _PD5 : 1 ;
+/*       87 */  unsigned int : 1 ;
+/*       88 */  unsigned int _PD7 : 1 ;
+/*       89 */  } bits_PORTD ;
+/*       90 */  struct {
+/*       91 */  unsigned int _RDI : 1 ;
+/*       92 */  unsigned int _TD0 : 1 ;
+/*       93 */  unsigned int _MIS0 : 1 ;
+/*       94 */  unsigned int _MOSI : 1 ;
+/*       95 */  unsigned int _SCK : 1 ;
+/*       96 */  unsigned int _SS : 1 ;
+/*       97 */  unsigned int : 2 ;
+/*       98 */  } alt_bits_PORTD ;
+/*       99 */  unsigned char _PORTD ;
+/*      100 */  } U_PORTD ;
+/*      101 */ 
+/*      102 */  union {
+/*      103 */  struct {
+/*      104 */  unsigned int _DDA0 : 1 ;
+/*      105 */  unsigned int _DDA1 : 1 ;
+/*      106 */  unsigned int _DDA2 : 1 ;
+/*      107 */  unsigned int _DDA3 : 1 ;
+/*      108 */  unsigned int _DDA4 : 1 ;
+/*      109 */  unsigned int _DDA5 : 1 ;
+/*      110 */  unsigned int _DDA6 : 1 ;
+/*      111 */  unsigned int _DDA7 : 1 ;
+/*      112 */  } bits_DDRA ;
+/*      113 */  unsigned char _DDRA ;
+/*      114 */  } U_DDRA ;
+/*      115 */ 
+/*      116 */  union {
+/*      117 */  struct {
+/*      118 */  unsigned int _DDB0 : 1 ;
+/*      119 */  unsigned int _DDB1 : 1 ;
+/*      120 */  unsigned int _DDB2 : 1 ;
+/*      121 */  unsigned int _DDB3 : 1 ;
+/*      122 */  unsigned int _DDB4 : 1 ;
+/*      123 */  unsigned int _DDB5 : 1 ;
+/*      124 */  unsigned int _DDB6 : 1 ;
+/*      125 */  unsigned int _DDB7 : 1 ;
+/*      126 */  } bits_DDRB ;
+/*      127 */  unsigned char _DDRB ;
+/*      128 */  } U_DDRB ;
+/*      129 */ 
+/*      130 */  union {
+/*      131 */  struct {
+/*      132 */  unsigned int _DDC0 : 1 ;
+/*      133 */  unsigned int _DDC1 : 1 ;
+/*      134 */  unsigned int _DDC2 : 1 ;
+/*      135 */  unsigned int _DDC3 : 1 ;
+/*      136 */  unsigned int _DDC4 : 1 ;
+/*      137 */  unsigned int _DDC5 : 1 ;
+/*      138 */  unsigned int _DDC6 : 1 ;
+/*      139 */  unsigned int _DDC7 : 1 ;
+/*      140 */  } bits_DDRC ;
+/*      141 */  unsigned char _DDRC ;
+/*      142 */  } U_DDRC ;
+/*      143 */ 
+/*      144 */  unsigned int : 8 ;
+/*      145 */  unsigned int : 8 ;
+/*      146 */  unsigned int : 8 ;
+/*      147 */  unsigned int : 8 ;
+/*      148 */  unsigned int : 8 ;
+/*      149 */  unsigned int : 8 ;
+/*      150 */  unsigned int : 8 ;
+/*      151 */  unsigned int : 8 ;
+/*      152 */  unsigned int : 8 ;
+/*      153 */  unsigned int : 8 ;
+/*      154 */  unsigned int : 8 ;
+/*      155 */ 
+/*      156 */  union {
+/*      157 */  struct {
+/*      158 */  unsigned int _OLVL : 1 ;
+/*      159 */  unsigned int _IEDG : 1 ;
+/*      160 */  unsigned int : 3 ;
+/*      161 */  unsigned int _TOIE : 1 ;
+/*      162 */  unsigned int _OCIE : 1 ;
+/*      163 */  unsigned int _ICIE : 1 ;
+/*      164 */  } bits_TCR ;
+/*      165 */  unsigned char _TCR ;
+/*      166 */  } U_TCR ;
+/*      167 */ 
+/*      168 */  union {
+/*      169 */  struct {
+/*      170 */  unsigned int : 5 ;
+/*      171 */  unsigned int _TOF : 1 ;
+/*      172 */  unsigned int _OCF : 1 ;
+/*      173 */  unsigned int _ICF : 1 ;
+/*      174 */  } bits_TSR ;
+/*      175 */  unsigned char _TSR ;
+/*      176 */  } U_TSR ;
+/*      177 */ 
+/*      178 */  unsigned char _ICHR ;
+/*      179 */  unsigned char _ICLR ;
+/*      180 */ 
+/*      181 */  unsigned char _OCHR ;
+/*      182 */  unsigned char _OCLR ;
+/*      183 */ 
+/*      184 */  unsigned char _CHR ;
+/*      185 */  unsigned char _CLR ;
+/*      186 */ 
+/*      187 */  unsigned char _ACHR ;
+/*      188 */  unsigned char _ACLR ;
+/*      189 */ 
+/*      190 */  unsigned int : 8 ;
+/*      191 */  unsigned int : 8 ;
+/*      192 */  unsigned int : 8 ;
+/*      193 */  unsigned int : 8 ;
+/*      194 */ 
+/*      195 */  } TS_RegsHC05 ;
+/*      196 */ 
+/*      197 */ 
+/*      198 */ 
+/*      199 */ 
+/*      200 */ 
+/*      201 */ 
+/*      202 */ 
+/*      203 */ 
+/*      204 */ 
+/*      205 */ 
+/*      206 */ 
+/*      207 */ 
+/*      208 */ 
+/*      209 */ 
+/*      210 */ 
+/*      211 */ 
+/*      212 */ 
+/*      213 */ 
+/*      214 */ 
+/*      215 */ 
+/*      216 */ 
+/*      217 */ 
+/*      218 */ 
+/*      219 */ 
+/*      220 */ 
+/*      221 */ 
+/*      222 */ 
+/*      223 */ 
+/*      224 */ 
+/*      225 */ 
+/*      226 */ 
+/*      227 */ 
+/*      228 */ 
+/*      229 */ 
+/*      230 */ 
+/*      231 */ 
+/*      232 */ 
+/*      233 */ 
+/*      234 */ 
+/*      235 */ 
+/*      236 */ 
+/*      237 */ 
+/*      238 */ 
+/*      239 */ 
+/*      240 */ 
+/*      241 */ 
+/*      242 */ 
+/*      243 */ 
+/*      244 */ 
+/*      245 */ 
+/*      246 */ 
+/*      247 */ 
+/*      248 */ 
+/*      249 */ 
+/*      250 */ 
+/*      251 */ 
+/*      252 */ 
+/*      253 */ 
+/*      254 */ 
+/*      255 */ 
+/*      256 */ 
+/*      257 */ 
+/*      258 */ 
+/*      259 */ 
+/*      260 */ 
+/*      261 */ 
+/*      262 */ 
+/*      263 */ 
+/*      264 */ 
+/*      265 */ 
+/*      266 */ 
+/*      267 */ 
+/*      268 */ 
+/*      269 */ 
+/*      270 */ 
+/*      271 */ 
+/*      272 */ 
+/*      273 */ 
+/*      274 */ 
+/*      275 */ 
+/*      276 */ 
+/*      277 */ 
+/*      278 */ 
+/*      279 */ 
+/*      280 */ 
+/*      281 */ 
+/*      282 */ 
+/*      283 */ 
+/*      284 */ 
+/*      285 */ 
+/*      286 */ 
+/*      287 */ 
+/*      288 */ 
+/*      289 */ 
+/*      290 */ 
+/*      291 */ 
+/*      292 */ 
+/*      293 */ 
+/*      294 */ 
+/*      295 */ 
+/*      296 */ 
+/*      297 */ 
+/*      298 */ 
+/*      299 */ 
+/*      300 */ 
+/*      301 */  #pragma DATA_SEG SHORT DS_RegsHC05
+/*      302 */  extern TS_RegsHC05 RegsHC05 ;
+/*      303 */  #pragma DATA_SEG DEFAULT
+/*      304 */ 
+/*      305 */ 
+/*      306 */ 
+/*      307 */ 
+/*      308 */ 
+/*      309 */ 
+/*      310 */ 
+/*      311 */ 
+
+/**** FILE 'osd.h' */
+
+/*        2 */ 
+/*        3 */ 
+/*        4 */ 
+/*        5 */ 
+/*        6 */ 
+/*        7 */ 
+/*        8 */ 
+/*        9 */ 
+/*       10 */ 
+/*       11 */ 
+/*       12 */ 
+/*       13 */ 
+/*       14 */ 
+/*       15 */ 
+/*       16 */ 
+/*       17 */ 
+/*       18 */ 
+/*       19 */ 
+/*       20 */ 
+/*       21 */ 
+/*       22 */ 
+/*       23 */ 
+/*       24 */ 
+/*       25 */  void OSD_Reset ( void ) ;
+/*       26 */  void OSD_ScreenPos ( char hor , char vert ) ;
+/*       27 */  void OSD_TextPos ( char x , char y ) ;
+/*       28 */  void OSD_PrintStr ( char * str ) ;
+/*       29 */  void OSD_PrintChar ( char ch , char mode ) ;
+/*       30 */  void OSD_FullMode ( char mode ) ;
+/*       31 */  void OSD_CharMode ( char mode ) ;
+/*       32 */  void OSD_DisplayOn ( char display ) ;
+/*       33 */  void OSD_ColorMode ( char mode ) ;
+/*       34 */  void OSD_BlinkOption ( char option ) ;
+/*       35 */  void OSD_BlinkPeriod ( char period ) ;
+/*       36 */  void OSD_SyncMode ( char mode ) ;
+/*       37 */  void OSD_StandarType ( char type ) ;
+/*       38 */  void OSD_ColorEncoder ( char encoder ) ;
+/*       39 */  void OSD_LuminanceLevels ( char levels ) ;
+/*       40 */  void OSD_VideoFullPageMode ( char mode ) ;
+/*       41 */  void OSD_PrintExChar ( char ch , char mode ) ;
+/*       42 */ 
+/*       43 */ 
+/*       44 */ 
+
+/**** FILE 'Z:\ITEXT\itext\osd.c' */
+
+/*        2 */ 
+/*        3 */ 
+/*        4 */ 
+/*        5 */ 
+/*        6 */ 
+/*        7 */ 
+/*        8 */ 
+/*        9 */ 
+/*       10 */ 
+/*       11 */ 
+/*       12 */ 
+/*       13 */ 
+/*       14 */ 
+/*       15 */  void OSD_SendWord ( int word ) ;
+/*       16 */ 
+/*       17 */  union {
+/*       18 */  struct {
+/*       19 */  unsigned int _PageMode : 1 ;
+/*       20 */  unsigned int _CharMode : 1 ;
+/*       21 */  unsigned int _display : 1 ;
+/*       22 */  unsigned int _c3 : 1 ;
+/*       23 */  unsigned int _BlinkOpt : 1 ;
+/*       24 */  unsigned int _BlinkPeriod : 2 ;
+/*       25 */  unsigned int _sync : 1 ;
+/*       26 */  unsigned int _standard : 1 ;
+/*       27 */  unsigned int _ColorEnc : 1 ;
+/*       28 */  unsigned int _luminance : 1 ;
+/*       29 */  unsigned int _VideoFullPage : 1 ;
+/*       30 */  } _bits ;
+/*       31 */  unsigned char _valor ;
+/*       32 */  } u_mode ;
+/*       33 */ 
+/*       34 */ 
+/*       35 */  const char tabla [ ] = {
+/*       36 */  '0' , '1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , '-' , ' ' , 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' ,
+/*       37 */  'L' , 'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' , ':' , '.' , '/' , '\183' , 'a' , 'b' , 'c' , 'd' ,
+/*       38 */  'e' , 'f' , 'g' , 'h' , 'i' , 'j' , 'k' , 'l' , 'm' , 'n' , 'o' , 'p' , 'q' , 'r' , 's' , 't' , 'u' , 'v' , 'w' , 'x' , 'y' , 'z' , '\224' ,
+/*       39 */  '\226' , '\228' , '\225' , '\233' , '\232' , '\235' , '\236' , '\238' , '\239' , '\237' , '\242' , '\244' , '\246' , '\243' , '\249' , '\251' , '\252' , '\250' , '\196' , '\214' , '\220' } ;
+/*       40 */ 
+/*       41 */  void OSD_Reset ( void )
+/*       42 */  {
+/*       43 */  char n , i ;
+/*       44 */  int buff ;
+/*       45 */ 
+/*       46 */  u_mode . _valor = 0xb8e ;
+/*       47 */ 
+/*       48 */  OSD_SendWord ( 0x3000 ) ;
+/*       49 */  OSD_SendWord ( 0x3000 ) ;
+/*       50 */  OSD_SendWord ( 0x0 ) ;
+/*       51 */  OSD_SendWord ( 0x1000 ) ;
+/*       52 */  OSD_SendWord ( 0xdb ) ;
+/*       53 */  OSD_SendWord ( 0x1000 ) ;
+/*       54 */ 
+/*       55 */  OSD_SendWord ( 0xce ) ;
+/*       56 */  OSD_SendWord ( 0x1000 | 0xb8e ) ;
+/*       57 */ 
+/*       58 */  OSD_SendWord ( 0xd0 ) ;
+/*       59 */  OSD_SendWord ( 0x1000 | 0x04 ) ;
+/*       60 */ 
+/*       61 */  OSD_SendWord ( 0xcc ) ;
+/*       62 */  OSD_SendWord ( 0x1000 | 0x0 ) ;
+/*       63 */ 
+/*       64 */  OSD_SendWord ( 0xcd ) ;
+/*       65 */  OSD_SendWord ( 0x1000 | 0x482 ) ;
+/*       66 */ 
+/*       67 */ 
+/*       68 */  for ( n = 0 ; n < 11 ; n ++ )
+/*       69 */  {
+/*       70 */  OSD_SendWord ( 0xc0 | n ) ;
+/*       71 */  OSD_SendWord ( 0x1000 | 0x0c0 ) ;
+/*       72 */  }
+/*       73 */ 
+/*       74 */  for ( n = 0 ; n < 11 ; n ++ )
+/*       75 */  {
+/*       76 */  for ( i = 0 ; i < 28 ; i ++ )
+/*       77 */  {
+/*       78 */  buff = n << 8 ;
+/*       79 */  buff |= i ;
+/*       80 */  OSD_SendWord ( 0x0 | buff ) ;
+/*       81 */  OSD_SendWord ( 0x1000 | 0x08b ) ;
+/*       82 */  }
+/*       83 */  }
+/*       84 */ 
+/*       85 */ 
+/*       86 */  }
+/*       87 */ 
+/*       88 */  void OSD_FullMode ( char mode )
+/*       89 */  {
+/*       90 */  u_mode . _bits . _PageMode = mode ;
+/*       91 */  OSD_SendWord ( 0xce ) ;
+/*       92 */  OSD_SendWord ( 0x1000 | u_mode . _valor ) ;
+/*       93 */  }
+/*       94 */ 
+/*       95 */  void OSD_CharMode ( char mode )
+/*       96 */  {
+/*       97 */  u_mode . _bits . _CharMode = mode ;
+/*       98 */  OSD_SendWord ( 0xce ) ;
+/*       99 */  OSD_SendWord ( 0x1000 | u_mode . _valor ) ;
+/*      100 */  }
+/*      101 */ 
+/*      102 */  void OSD_DisplayOn ( char display )
+/*      103 */  {
+/*      104 */  u_mode . _bits . _display = display ;
+/*      105 */  OSD_SendWord ( 0xce ) ;
+/*      106 */  OSD_SendWord ( 0x1000 | u_mode . _valor ) ;
+/*      107 */  }
+/*      108 */ 
+/*      109 */  void OSD_ColorMode ( char mode )
+/*      110 */  {
+/*      111 */  u_mode . _bits . _c3 = mode ;
+/*      112 */  OSD_SendWord ( 0xce ) ;
+/*      113 */  OSD_SendWord ( 0x1000 | u_mode . _valor ) ;
+/*      114 */  }
+/*      115 */ 
+/*      116 */  void OSD_BlinkOption ( char option )
+/*      117 */  {
+/*      118 */  u_mode . _bits . _BlinkOpt = option ;
+/*      119 */  OSD_SendWord ( 0xce ) ;
+/*      120 */  OSD_SendWord ( 0x1000 | u_mode . _valor ) ;
+/*      121 */  }
+/*      122 */ 
+/*      123 */  void OSD_BlinkPeriod ( char period )
+/*      124 */  {
+/*      125 */  u_mode . _bits . _BlinkPeriod = period ;
+/*      126 */  OSD_SendWord ( 0xce ) ;
+/*      127 */  OSD_SendWord ( 0x1000 | u_mode . _valor ) ;
+/*      128 */  }
+/*      129 */ 
+/*      130 */  void OSD_SyncMode ( char mode )
+/*      131 */  {
+/*      132 */  u_mode . _bits . _sync = mode ;
+/*      133 */  OSD_SendWord ( 0xce ) ;
+/*      134 */  OSD_SendWord ( 0x1000 | u_mode . _valor ) ;
+/*      135 */  }
+/*      136 */ 
+/*      137 */  void OSD_StandarType ( char type )
+/*      138 */  {
+/*      139 */  u_mode . _bits . _standard = type ;
+/*      140 */  OSD_SendWord ( 0xce ) ;
+/*      141 */  OSD_SendWord ( 0x1000 | u_mode . _valor ) ;
+/*      142 */  }
+/*      143 */ 
+/*      144 */  void OSD_ColorEncoder ( char encoder )
+/*      145 */  {
+/*      146 */  u_mode . _bits . _ColorEnc = encoder ;
+/*      147 */  OSD_SendWord ( 0xce ) ;
+/*      148 */  OSD_SendWord ( 0x1000 | u_mode . _valor ) ;
+/*      149 */  }
+/*      150 */ 
+/*      151 */  void OSD_LuminanceLevels ( char levels )
+/*      152 */  {
+/*      153 */  u_mode . _bits . _luminance = levels ;
+/*      154 */  OSD_SendWord ( 0xce ) ;
+/*      155 */  OSD_SendWord ( 0x1000 | u_mode . _valor ) ;
+/*      156 */  }
+/*      157 */ 
+/*      158 */  void OSD_VideoFullPageMode ( char mode )
+/*      159 */  {
+/*      160 */  u_mode . _bits . _VideoFullPage = mode ;
+/*      161 */  OSD_SendWord ( 0xce ) ;
+/*      162 */  OSD_SendWord ( 0x1000 | u_mode . _valor ) ;
+/*      163 */  }
+/*      164 */ 
+/*      165 */  void OSD_SendWord ( int word )
+/*      166 */  {
+/*      167 */  char n ;
+/*      168 */  RegsHC05 . U_PORTB . _PORTB &= ~ 8 ;
+/*      169 */ 
+/*      170 */  for ( n = 0 ; n < 16 ; n ++ )
+/*      171 */  {
+/*      172 */  if ( word & 0x8000 )
+/*      173 */  RegsHC05 . U_PORTB . _PORTB |= 2 ;
+/*      174 */  else
+/*      175 */  RegsHC05 . U_PORTB . _PORTB &= ~ 2 ;
+/*      176 */ 
+/*      177 */  RegsHC05 . U_PORTB . _PORTB &= ~ 4 ;
+/*      178 */  RegsHC05 . U_PORTB . _PORTB |= 4 ;
+/*      179 */ 
+/*      180 */  word = word << 1 ;
+/*      181 */  }
+/*      182 */  RegsHC05 . U_PORTB . _PORTB |= 8 ;
+/*      183 */  }
+/*      184 */ 
+/*      185 */ 
+/*      186 */  void OSD_ScreenPos ( char hor , char vert )
+/*      187 */  {
+/*      188 */  int tmp ;
+/*      189 */ 
+/*      190 */  tmp = vert ;
+/*      191 */  tmp <<= 6 ;
+/*      192 */  tmp |= hor ;
+/*      193 */  OSD_SendWord ( 0xcf ) ;
+/*      194 */  OSD_SendWord ( 0x1000 | tmp ) ;
+/*      195 */  }
+/*      196 */ 
+/*      197 */  void OSD_TextPos ( char x , char y )
+/*      198 */  {
+/*      199 */  int iCol = y << 8 ;
+/*      200 */ 
+/*      201 */  OSD_SendWord ( ( 0x0 | iCol ) | x ) ;
+/*      202 */  }
+/*      203 */ 
+/*      204 */  void OSD_PrintStr ( char * str )
+/*      205 */  {
+/*      206 */  char car ;
+/*      207 */  while ( * str != 0 )
+/*      208 */  {
+/*      209 */  for ( car = 0 ; car < 90 ; car ++ )
+/*      210 */  {
+/*      211 */  if ( tabla [ car ] == * str )
+/*      212 */  break ;
+/*      213 */  }
+/*      214 */  OSD_SendWord ( 0x1000 | car ) ;
+/*      215 */  str ++ ;
+/*      216 */  }
+/*      217 */  }
+/*      218 */ 
+/*      219 */  void OSD_PrintChar ( char ch , char mode )
+/*      220 */  {
+/*      221 */  char car ;
+/*      222 */  for ( car = 0 ; car < 90 ; car ++ )
+/*      223 */  {
+/*      224 */  if ( tabla [ car ] == ch )
+/*      225 */  break ;
+/*      226 */  }
+/*      227 */  car |= mode ;
+/*      228 */  OSD_SendWord ( 0x1000 | car ) ;
+/*      229 */  }
+/*      230 */ 
+/*      231 */  void OSD_PrintExChar ( char ch , char mode )
+/*      232 */  {
+/*      233 */  ch |= mode ;
+/*      234 */  OSD_SendWord ( 0x1000 | ch ) ;
+/*      235 */  }
+/*      236 */ 
+/*      237 */ 
+/*      238 */ 
+/*      239 */ 

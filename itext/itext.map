@@ -1,0 +1,276 @@
+
+PROGRAM "itext.abs"
+
+*********************************************************************************
+TARGET SECTION
+---------------------------------------------------------------------------------
+Processor   : Motorola HC05
+Memory Model: LARGE
+File Format : ELF\Dwarf 2.0
+
+*********************************************************************************
+FILE SECTION
+---------------------------------------------------------------------------------
+main.o                                  MODEL: LARGE               
+osd.o                                   MODEL: LARGE               
+rtshc05.o (ansi.lib)                    MODEL: LARGE               
+
+*********************************************************************************
+STARTUP SECTION
+---------------------------------------------------------------------------------
+Entry point : 0x165 (reset)
+
+*********************************************************************************
+SECTION-ALLOCATION SECTION
+Section Name                    Size  Type     From       To       Segment
+---------------------------------------------------------------------------------
+DS_RegsHC05                       32   N/I        0x0       0x1F   REGSHC05
+.stack                            64   R/W       0xC0       0xFF   MY_STACK
+.text                            455     R      0x200      0x3C6   MY_ROM
+.rodata                           90     R      0x3C7      0x420   MY_ROM
+.rodata1                         319     R      0x421      0x55F   MY_ROM
+.init                            160     R      0x160      0x1FF   MY_ROM
+.overlap                           7   R/W       0x30       0x36   MY_ZRAM
+_ZEROPAGE                         13   R/W       0x37       0x43   MY_ZRAM
+.common                            2   R/W       0x44       0x45   MY_ZRAM
+.vectSeg0_vect                     2     R     0x1FDF     0x1FE0   .vectSeg0
+.vectSeg1_vect                     2     R     0x1FF0     0x1FF1   .vectSeg1
+.vectSeg2_vect                    12     R     0x1FF4     0x1FFF   .vectSeg2
+
+*********************************************************************************
+VECTOR-ALLOCATION SECTION
+    Address     InitValue   InitFunction
+---------------------------------------------------------------------------------
+     0x1FDF          0xC2
+     0x1FF0           0x0
+     0x1FF4         0x160   SPI
+     0x1FF6         0x164   SCI
+     0x1FF8         0x161   TIMER
+     0x1FFA         0x162   IRQ
+     0x1FFC         0x163   SWI
+     0x1FFE         0x165   reset
+
+*********************************************************************************
+OBJECT-ALLOCATION SECTION
+     Name               Module                 Addr   hSize   dSize     Ref  RLIB
+---------------------------------------------------------------------------------
+MODULE:                 -- main.o --
+- PROCEDURES:
+     SPI                                        160       1       1       0
+     TIMER                                      161       1       1       0
+     IRQ                                        162       1       1       0
+     SWI                                        163       1       1       0
+     SCI                                        164       1       1       0
+     reset                                      165      9B     155       0
+- VARIABLES:
+     STRING.1                                   421      1D      29       2
+     STRING.2                                   43E      1D      29       2
+     STRING.3                                   45B      1D      29       2
+     STRING.4                                   478      1D      29       2
+     STRING.5                                   495      1D      29       2
+     STRING.6                                   4B2      1D      29       2
+     STRING.7                                   4CF      1D      29       2
+     STRING.8                                   4EC      1D      29       2
+     STRING.9                                   509      1D      29       2
+     STRING.10                                  526      1D      29       2
+     STRING.11                                  543      1D      29       2
+     RegsHC05                                     0      20      32      10
+MODULE:                 -- osd.o --
+- PROCEDURES:
+     OSD_Reset                                  200      AD     173       1
+     OSD_FullMode                               2AD      22      34       1
+     OSD_BlinkOption                            2CF      22      34       1
+     OSD_BlinkPeriod                            2F1      1E      30       1
+     OSD_SendWord                               30F      24      36      28
+     OSD_ScreenPos                              333      2E      46       1
+     OSD_TextPos                                361      19      25       1
+     OSD_PrintStr                               37A      42      66      11
+- VARIABLES:
+     tabla                                      3C7      5A      90       1
+     __OVL_9_OSD_Reset_n.1                       36       1       1       8
+     __OVL_9_OSD_Reset_i.2                       35       1       1       4
+     __OVL_9_OSD_Reset_buff.3                    33       2       2       5
+     __OVL_12_OSD_FullMode_p0                    33       1       1       2
+     __OVL_15_OSD_BlinkOption_p0                 33       1       1       2
+     __OVL_12_OSD_SendWord_p0                    31       2       2       5
+     __OVL_12_OSD_SendWord_n.4                   30       1       1       3
+     __OVL_13_OSD_ScreenPos_p1                   35       1       1       2
+     __OVL_13_OSD_ScreenPos_tmp.5                33       2       2       9
+     __OVL_11_OSD_TextPos_p1                     35       1       1       2
+     __OVL_11_OSD_TextPos_iCol.6                 33       2       2       3
+     __OVL_12_OSD_PrintStr_p0                    35       2       2       8
+     __OVL_12_OSD_PrintStr_car.7                 34       1       1       5
+     __OVL_12_OSD_PrintStr_spill0                33       1       1       2
+     u_mode                                      44       2       2      13
+MODULE:                 -- rtshc05.o (ansi.lib) --
+- PROCEDURES:
+     _ILSL                                      3BC       B      11       3
+- VARIABLES:
+     _LEX                                        37       4       4       8
+     _SEX                                        3B       4       4       2
+     _JSR                                        3F       3       3       1
+     _R_Y                                        42       1       1       5
+     _R_Z                                        43       1       1       6
+
+*********************************************************************************
+SECTION USE IN OBJECT-ALLOCATION SECTION
+---------------------------------------------------------------------------------
+SECTION: ".text"
+  OSD_Reset OSD_FullMode OSD_BlinkOption OSD_BlinkPeriod OSD_SendWord 
+  OSD_ScreenPos OSD_TextPos OSD_PrintStr _ILSL 
+SECTION: ".init"
+  SPI TIMER IRQ SWI SCI reset 
+SECTION: ".rodata"
+  tabla 
+SECTION: ".rodata1"
+  STRING.1 STRING.2 STRING.3 STRING.4 STRING.5 STRING.6 STRING.7 STRING.8 
+  STRING.9 STRING.10 STRING.11 
+SECTION: ".overlap"
+  __OVL_12_OSD_SendWord_n.4 __OVL_12_OSD_SendWord_p0 
+  __OVL_12_OSD_PrintStr_spill0 __OVL_11_OSD_TextPos_iCol.6 
+  __OVL_15_OSD_BlinkOption_p0 __OVL_12_OSD_FullMode_p0 
+  __OVL_13_OSD_ScreenPos_tmp.5 __OVL_9_OSD_Reset_buff.3 
+  __OVL_12_OSD_PrintStr_car.7 __OVL_12_OSD_PrintStr_p0 __OVL_11_OSD_TextPos_p1 
+  __OVL_13_OSD_ScreenPos_p1 __OVL_9_OSD_Reset_i.2 __OVL_9_OSD_Reset_n.1 
+SECTION: "DS_RegsHC05"
+  RegsHC05 
+SECTION: "_ZEROPAGE"
+  _LEX _SEX _JSR _R_Y _R_Z 
+SECTION: ".common"
+  u_mode 
+
+*********************************************************************************
+UNUSED-OBJECTS SECTION
+---------------------------------------------------------------------------------
+NOT USED PROCEDURES
+main.o:
+  main DoCuc 
+osd.o:
+  OSD_CharMode OSD_DisplayOn OSD_ColorMode OSD_SyncMode OSD_StandarType 
+  OSD_ColorEncoder OSD_LuminanceLevels OSD_VideoFullPageMode OSD_PrintChar 
+  OSD_PrintExChar 
+rtshc05.o (ansi.lib):
+  _SaveRegs _LoadRegs _ST32 SaveLong RestoreLong _CMPS _COPY _LOAD_IL 
+  _STORE_IL _SCOPY _SEXT16 _BDIVU _BDIVS _BDIVMOD _BMODU _BMODS _IENTER _IASR 
+  _ILSR _INEG _IDIVMOD _IDIVU _IDIVS _IMODU _IMODS _IMULU _IMULS _SMUL _LENTER 
+  _LEXIT _LEXIT_Regs _SEXT32 _LASR _LLSR _LLSL _LMULU _LMULS _LNEG_Regs 
+  _LNEG_Mem _LDIVMOD _LDIVU _LDIVS _LMODU _LMODS _CASE_DIRECT _CASE_CHECKED 
+  _CASE_SEARCH _SLDEC _SLINC _LDEC _LINC _LRINC _LRDEC 
+NOT USED VARIABLES
+main.o:
+  STRING.12 __OVL_DoCuc_n.13 __OVL_DoCuc_constX.14 __OVL_DoCuc_constY.15 
+  __OVL_DoCuc_i.16 __OVL_DoCuc_posX.17 __OVL_DoCuc_posY.18 __OVL_DoCuc_idx.19 
+osd.o:
+  __OVL_12_OSD_CharMode_p0 __OVL_13_OSD_DisplayOn_p0 __OVL_13_OSD_ColorMode_p0 
+  __OVL_15_OSD_BlinkPeriod_p0 __OVL_12_OSD_SyncMode_p0 
+  __OVL_15_OSD_StandarType_p0 __OVL_16_OSD_ColorEncoder_p0 
+  __OVL_19_OSD_LuminanceLevels_p0 __OVL_21_OSD_VideoFullPageMode_p0 
+  __OVL_13_OSD_ScreenPos_p0 __OVL_11_OSD_TextPos_p0 __OVL_13_OSD_PrintChar_p1 
+  __OVL_13_OSD_PrintChar_p0 __OVL_13_OSD_PrintChar_car.8 
+  __OVL_15_OSD_PrintExChar_p1 __OVL_15_OSD_PrintExChar_p0 
+rtshc05.o (ansi.lib):
+  _work _savePtr __OVL_9__SaveRegs_p0 __OVL_9__LoadRegs_p0 __OVL_SaveLong_p0 
+  __OVL_RestoreLong_p0 
+
+*********************************************************************************
+COPYDOWN SECTION
+---------------------------------------------------------------------------------
+
+*********************************************************************************
+OBJECT-DEPENDENCIES SECTION
+---------------------------------------------------------------------------------
+reset                     USES _LEX _SEX _JSR RegsHC05 OSD_Reset OSD_ScreenPos 
+                                OSD_FullMode OSD_BlinkOption OSD_BlinkPeriod OSD_TextPos 
+                                STRING.1 OSD_PrintStr STRING.2 STRING.3 STRING.4 
+                                STRING.5 STRING.6 STRING.7 STRING.8 STRING.9 STRING.10 
+                                STRING.11 
+OSD_Reset                 USES u_mode OSD_SendWord __OVL_9_OSD_Reset_n.1 
+                                __OVL_9_OSD_Reset_i.2 _R_Z _R_Y _ILSL __OVL_9_OSD_Reset_buff.3 
+OSD_FullMode              USES __OVL_12_OSD_FullMode_p0 u_mode OSD_SendWord 
+OSD_BlinkOption           USES __OVL_15_OSD_BlinkOption_p0 u_mode OSD_SendWord 
+OSD_BlinkPeriod           USES u_mode OSD_SendWord 
+OSD_SendWord              USES __OVL_12_OSD_SendWord_p0 RegsHC05 
+                                __OVL_12_OSD_SendWord_n.4 
+OSD_ScreenPos             USES __OVL_13_OSD_ScreenPos_p1 
+                                __OVL_13_OSD_ScreenPos_tmp.5 _R_Z _R_Y _ILSL OSD_SendWord 
+OSD_TextPos               USES __OVL_11_OSD_TextPos_p1 _R_Z _R_Y _ILSL 
+                                __OVL_11_OSD_TextPos_iCol.6 OSD_SendWord 
+OSD_PrintStr              USES __OVL_12_OSD_PrintStr_p0 
+                                __OVL_12_OSD_PrintStr_car.7 tabla __OVL_12_OSD_PrintStr_spill0 _LEX 
+                                OSD_SendWord 
+_ILSL                     USES _R_Y 
+
+*********************************************************************************
+DEPENDENCY TREE
+*********************************************************************************
+ main and _Startup Group
+ | 
+ +* reset                : 0x30..0x36 (size 7)
+    | 
+    +* OSD_Reset            : 0x30..0x36 (size 7)
+    |  | +* buff (__OVL_9_OSD_Reset_buff.3) : 0x33..0x34 (size 2)
+    |  | +* i (__OVL_9_OSD_Reset_i.2) : 0x35 (size 1)
+    |  | +* n (__OVL_9_OSD_Reset_n.1) : 0x36 (size 1)
+    |  | 
+    |  +* OSD_SendWord         : 0x30..0x32 (size 3)
+    |  |    +* n (__OVL_12_OSD_SendWord_n.4) : 0x30 (size 1)
+    |  |    +* p0 (__OVL_12_OSD_SendWord_p0) : 0x31..0x32 (size 2)
+    |  |    
+    |  +- _ILSL               
+    |       
+    +- OSD_ScreenPos        : 0x30..0x35 (size 6)
+    |  | +- tmp (__OVL_13_OSD_ScreenPos_tmp.5) : 0x33..0x34 (size 2)
+    |  | +- p1 (__OVL_13_OSD_ScreenPos_p1) : 0x35 (size 1)
+    |  | 
+    |  +- _ILSL                (see above)
+    |  |  
+    |  +* OSD_SendWord         : 0x30..0x32 (size 3) (see above)
+    |     
+    +- OSD_FullMode         : 0x30..0x33 (size 4)
+    |  | +- p0 (__OVL_12_OSD_FullMode_p0) : 0x33 (size 1)
+    |  | 
+    |  +* OSD_SendWord         : 0x30..0x32 (size 3) (see above)
+    |     
+    +- OSD_BlinkOption      : 0x30..0x33 (size 4)
+    |  | +- p0 (__OVL_15_OSD_BlinkOption_p0) : 0x33 (size 1)
+    |  | 
+    |  +* OSD_SendWord         : 0x30..0x32 (size 3) (see above)
+    |     
+    +- OSD_BlinkPeriod      : 0x30..0x32 (size 3)
+    |  | 
+    |  +* OSD_SendWord         : 0x30..0x32 (size 3) (see above)
+    |     
+    +- OSD_TextPos          : 0x30..0x35 (size 6)
+    |  | +- iCol (__OVL_11_OSD_TextPos_iCol.6) : 0x33..0x34 (size 2)
+    |  | +- p1 (__OVL_11_OSD_TextPos_p1) : 0x35 (size 1)
+    |  | 
+    |  +- _ILSL                (see above)
+    |  |  
+    |  +* OSD_SendWord         : 0x30..0x32 (size 3) (see above)
+    |     
+    +* OSD_PrintStr         : 0x30..0x36 (size 7)
+       | +* spill0 (__OVL_12_OSD_PrintStr_spill0) : 0x33 (size 1)
+       | +* car (__OVL_12_OSD_PrintStr_car.7) : 0x34 (size 1)
+       | +* p0 (__OVL_12_OSD_PrintStr_p0) : 0x35..0x36 (size 2)
+       | 
+       +* OSD_SendWord         : 0x30..0x32 (size 3) (see above)
+          
+ SPI                 
+   
+ SCI                 
+   
+ TIMER               
+   
+ IRQ                 
+   
+ SWI                 
+   
+*********************************************************************************
+STATISTIC SECTION
+---------------------------------------------------------------------------------
+
+ExeFile:
+--------
+Number of blocks to be downloaded: 27
+Total size of all blocks to be downloaded: 1024
+

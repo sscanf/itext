@@ -1,0 +1,92 @@
+ANSI-C/cC++ Compiler for HC08 V-5.0.17, Apr 22 2003
+
+    1:  /*
+    2:  ** ###################################################################
+    3:  **
+    4:  **     Filename  : Events.C
+    5:  **
+    6:  **     Project   : itext_gp32
+    7:  ** 
+    8:  **     Processor : MC68HC908GP32CFB
+    9:  **
+   10:  **     Beantype  : Events
+   11:  **
+   12:  **     Version   : Driver 01.01
+   13:  **
+   14:  **     Compiler  : Metrowerks HC08 C Compiler
+   15:  **
+   16:  **     Date/Time : 29/12/05, 9:18
+   17:  **
+   18:  **     Abstract  :
+   19:  **
+   20:  **         This is user's event module.
+   21:  **         Put your event handler code here.
+   22:  **
+   23:  **     Settings  :
+   24:  **
+   25:  **
+   26:  **     Contents  :
+   27:  **
+   28:  **         Cpu_OnSwINT - void Cpu_OnSwINT(void);
+   29:  **
+   30:  **
+   31:  **     (c) Copyright UNIS, spol. s r.o. 1997-2002
+   32:  **
+   33:  **     UNIS, spol. s r.o.
+   34:  **     Jundrovska 33
+   35:  **     624 00 Brno
+   36:  **     Czech Republic
+   37:  **
+   38:  **     http      : www.processorexpert.com
+   39:  **     mail      : info@processorexpert.com
+   40:  **
+   41:  ** ###################################################################
+   42:  */
+   43:  /* MODULE Events */
+   44:  
+   45:  #pragma MESSAGE DISABLE C1420 /* WARNING C1420: Result of function-call is ignored */
+   46:  
+   47:  
+   48:  /*Including used modules for compilling procedure*/
+   49:  #include "Cpu.h"
+   50:  #include "Events.h"
+   51:  
+   52:  /*Include shared modules, which are used for whole project*/
+   53:  #include "PE_Types.h"
+   54:  #include "PE_Error.h"
+   55:  #include "PE_Const.h"
+   56:  #include "IO_Map.h"
+   57:  
+   58:  /*
+   59:  ** ===================================================================
+   60:  **     Event       :  Cpu_OnSwINT (module Events)
+   61:  **
+   62:  **     From bean   :  Cpu [MC68HC908GP32_44]
+   63:  **     Description :
+   64:  **         This software event is called after software reset.
+   65:  **     Parameters  : None
+   66:  **     Returns     : Nothing
+   67:  ** ===================================================================
+   68:  */
+   69:  void Cpu_OnSwINT(void)
+   70:  {
+
+Function: Cpu_OnSwINT
+Source  : Z:\itext\itext_gp32\Code\Events.C
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\Events.C.o -WmsgSd1106 -WmsgSd1420
+
+   71:    /* Write your code here ... */
+   72:  }
+  0000 81               RTS   
+   73:  
+   74:  /* END Events */
+   75:  
+   76:  /*
+   77:  ** ###################################################################
+   78:  **
+   79:  **     This file was created by UNIS Processor Expert 03.23 for 
+   80:  **     the Motorola HC08 series of microcontrollers.
+   81:  **
+   82:  ** ###################################################################
+   83:  */
+   84:  

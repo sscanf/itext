@@ -1,0 +1,75 @@
+ANSI-C/cC++ Compiler for HC08 V-5.0.17, Apr 22 2003
+
+    1:  //Proceso de retardo de 1ms.
+    2:  //Está calculado para un clock interno de 4915 Hz
+    3:  //
+    4:  //El calculo es el siguiente:
+    5:  //
+    6:  //delay = (ClockInterno / 13)
+    7:  
+    8:  #define DELAY 4915/13
+    9:  
+   10:  void delay_ms (char delay)
+   11:  {
+
+Function: delay_ms
+Source  : Z:\itext\itext_gp32\Code\delay.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\delay.c.o
+
+   12:  asm{
+   13:  delay_ms:	                            //5 cycles for JSR ext
+   14:                  psha                    //2 Stack Accumulator
+  0000 87               PSHA  
+   15:                  pshx                    //2 Stack Index Register X
+  0001 89               PSHX  
+   16:                  pshh                    //2 Stack Index Register H
+  0002 8b               PSHH  
+   17:                  tax                     //1 Save Accumulator in Index X
+  0003 97               TAX   
+   18:                  tpa                     //1 Get Condition Code reg into Acc
+  0004 85               TPA   
+   19:                  psha                    //2 Stack Condition Code reg
+  0005 87               PSHA  
+   20:                  txa                     //1 Restore Accumulator
+  0006 9f               TXA   
+  0007          L7:     
+   21:  
+   22:  DelaymS3010:
+   23:  
+   24:  DelaymS3020:    ldhx    #DELAY          //  3 Load delay into H:X
+  0007 45017a           LDHX  #378
+  000a          LA:     
+   25:  DelaymS3030:    aix     #-1             //  2 Decrement delay
+  000a afff             AIX   #-1
+   26:                  sta     0XFFFF			//  $FFFF=COPCTL ,  4 Kick the WDOG so the part doesn't reset
+  000c c7ffff           STA   65535
+   27:                  nop                     //  1 Burn 1 cycle
+  000f 9d               NOP   
+   28:                  cphx    #0              //  3 Done yet?
+  0010 650000           CPHX  #0
+   29:                  bne     DelaymS3030     //  3 Branch if not done
+  0013 26f5             BNE   LA ;abs = 000a
+   30:                                          //  3+(13*378)=4915
+   31:                  nop                     // 1 burn 1 bus cycle
+  0015 9d               NOP   
+   32:                  dbnza   DelaymS3010     // 3 decrement # of mS to delay
+  0016 4bef             DBNZA L7 ;abs = 0007
+   33:                                          //   branch if not done
+   34:                                          // Acc*(4915+4) = Acc * 4919
+   35:  
+   36:                  pula                    //2 Unstack Condition Code register data
+  0018 86               PULA  
+   37:                  tap                     //1 Restore Condition Code register
+  0019 84               TAP   
+   38:                  pulh                    //2 Unstack Index Register H
+  001a 8a               PULH  
+   39:                  pulx                    //2 Unstack Index Register X
+  001b 88               PULX  
+   40:                  pula                    //2 Unstack Accumulator
+  001c 86               PULA  
+   41:  
+   42:  DelaymS3015:    rts                     //4 all done - return to calling routine
+  001d 81               RTS   
+   43:                                          //27 + Acc*1229
+   44:  };
+   45:  }

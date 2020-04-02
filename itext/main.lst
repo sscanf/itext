@@ -1,0 +1,371 @@
+HI-CROSS+ ANSI-C/cC++ Compiler for HC05 V-5.0.8, Dec 15 1998
+
+    1:  #pragma CREATE_ASM_LISTING ON
+    2:  /* terminal.wnd */
+    3:  
+    4:  #include <stdlib.h>
+    5:  #include <hidef.h>
+    6:  #include <ctype.h>
+    7:  
+    8:  #include <hc05c2_r.h>
+    9:  
+   10:  #include "osd.h"
+   11:  
+   12:  #pragma DATA_SEG SHORT  DS_RegsHC05
+   13:  TS_RegsHC05 RegsHC05;
+   14:  
+   15:  #pragma DATA_SEG DEFAULT
+   16:  
+   17:  #define lda 0xD6        /* indexed long */
+   18:  #define sta 0xD7        /* indexed long */
+   19:  #define jmp 0xCC        /* ext */
+   20:  #define rts 0x81
+   21:  
+   22:  #define CCR (*((unsigned char*)(0x1fdf)))
+   23:  extern char _SEX[4], _LEX[4], _JSR[3];
+   24:  
+   25:  #define TOTAL_CUC 6
+   26:  
+   27:  void DoCuc();
+   28:  void main()
+   29:  {
+   30:  }
+
+Function: main
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 81       RTS   
+   31:  
+   32:  extern interrupt void SPI()
+   33:  {
+   34:  }
+
+Function: SPI
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 80       RTI   
+   35:  
+   36:  extern interrupt void TIMER()
+   37:  {
+   38:  }
+
+Function: TIMER
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 80       RTI   
+   39:  
+   40:  extern interrupt void IRQ()
+   41:  {
+   42:  }
+
+Function: IRQ
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 80       RTI   
+   43:  
+   44:  extern interrupt  void SWI()
+   45:  {
+   46:  }
+
+Function: SWI
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 80       RTI   
+   47:  
+   48:  extern interrupt void SCI()
+   49:  {
+   50:  }
+
+Function: SCI
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 80       RTI   
+   51:  
+   52:  void reset()
+   53:  {
+   54:     CCR = (unsigned char)0xc2;
+
+Function: reset
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 a6c2     LDA   #-62
+  0002 c71fdf   STA   0x1FDF
+   55:  	//Esto está extraido del módulo que STARTUPX.C que viene con el compilador
+   56:  	//Inicializa el entorno para que el C funcione correctamente.
+   57:  	 _LEX[0]= lda; _LEX[3]= rts; _SEX[0]= sta; _SEX[3]= rts;
+  0005 a6d6     LDA   #-42
+  0007 c70000   STA   _LEX
+  000a a681     LDA   #-127
+  000c c70003   STA   _LEX:3
+  000f a6d7     LDA   #-41
+  0011 c70000   STA   _SEX
+  0014 ae81     LDX   #-127
+  0016 cf0003   STX   _SEX:3
+   58:  	 _JSR[0]= jmp;  
+  0019 a6cc     LDA   #-52
+  001b c70000   STA   _JSR
+   59:  
+   60:  	DDRC = 0x83;
+  001e a683     LDA   #-125
+  0020 b706     STA   RegsHC05:6
+   61:  	DDRA = 0xff;
+  0022 a6ff     LDA   #-1
+  0024 b704     STA   RegsHC05:4
+   62:  	DDRB = 0xfe;
+  0026 a6fe     LDA   #-2
+  0028 b705     STA   RegsHC05:5
+   63:  
+   64:  	PORTC=0xff;
+  002a a6ff     LDA   #-1
+  002c b702     STA   RegsHC05:2
+   65:  	OSD_Reset();
+  002e cd0000   JSR   OSD_Reset
+   66:  
+   67:  	OSD_ScreenPos (16,26);
+  0031 ae10     LDX   #16
+  0033 a61a     LDA   #26
+  0035 cd0000   JSR   OSD_ScreenPos
+   68:  	OSD_FullMode (FALSE);
+  0038 4f       CLRA  
+  0039 cd0000   JSR   OSD_FullMode
+   69:  	OSD_BlinkOption (TRUE);
+  003c a601     LDA   #1
+  003e cd0000   JSR   OSD_BlinkOption
+   70:  	OSD_BlinkPeriod (MODE_BLINK_75);
+  0041 a601     LDA   #1
+  0043 cd0000   JSR   OSD_BlinkPeriod
+   71:  
+   72:  	OSD_TextPos (0,0);
+  0046 5f       CLRX  
+  0047 4f       CLRA  
+  0048 cd0000   JSR   OSD_TextPos
+   73:  	OSD_PrintStr ("1234567890123456789012345678");
+  004b ae01     LDX   #HIGH("1234567890123456789012345678")
+  004d a600     LDA   #"1234567890123456789012345678"
+  004f cd0000   JSR   OSD_PrintStr
+   74:  	OSD_PrintStr ("2234567890123456789012345678");
+  0052 ae01     LDX   #HIGH("2234567890123456789012345678")
+  0054 a600     LDA   #"2234567890123456789012345678"
+  0056 cd0000   JSR   OSD_PrintStr
+   75:  	OSD_PrintStr ("3234567890123456789012345678");
+  0059 ae01     LDX   #HIGH("3234567890123456789012345678")
+  005b a600     LDA   #"3234567890123456789012345678"
+  005d cd0000   JSR   OSD_PrintStr
+   76:  	OSD_PrintStr ("4234567890123456789012345678");
+  0060 ae01     LDX   #HIGH("4234567890123456789012345678")
+  0062 a600     LDA   #"4234567890123456789012345678"
+  0064 cd0000   JSR   OSD_PrintStr
+   77:  	OSD_PrintStr ("5234567890123456789012345678");
+  0067 ae01     LDX   #HIGH("5234567890123456789012345678")
+  0069 a600     LDA   #"5234567890123456789012345678"
+  006b cd0000   JSR   OSD_PrintStr
+   78:  	OSD_PrintStr ("6234567890123456789012345678");
+  006e ae01     LDX   #HIGH("6234567890123456789012345678")
+  0070 a600     LDA   #"6234567890123456789012345678"
+  0072 cd0000   JSR   OSD_PrintStr
+   79:  	OSD_PrintStr ("7234567890123456789012345678");
+  0075 ae01     LDX   #HIGH("7234567890123456789012345678")
+  0077 a600     LDA   #"7234567890123456789012345678"
+  0079 cd0000   JSR   OSD_PrintStr
+   80:  	OSD_PrintStr ("8234567890123456789012345678");
+  007c ae01     LDX   #HIGH("8234567890123456789012345678")
+  007e a600     LDA   #"8234567890123456789012345678"
+  0080 cd0000   JSR   OSD_PrintStr
+   81:  	OSD_PrintStr ("9234567890123456789012345678");
+  0083 ae01     LDX   #HIGH("9234567890123456789012345678")
+  0085 a600     LDA   #"9234567890123456789012345678"
+  0087 cd0000   JSR   OSD_PrintStr
+   82:  	OSD_PrintStr ("0234567890123456789012345678");
+  008a ae01     LDX   #HIGH("0234567890123456789012345678")
+  008c a600     LDA   #"0234567890123456789012345678"
+  008e cd0000   JSR   OSD_PrintStr
+   83:  	OSD_PrintStr ("1234567890123456789012345678");
+  0091 ae01     LDX   #HIGH("1234567890123456789012345678")
+  0093 a600     LDA   #"1234567890123456789012345678"
+  0095 cd0000   JSR   OSD_PrintStr
+   84:  
+   85:  
+   86:  //	DoCuc();
+   87:  
+   88:  	for (; ; );
+  0098 20fe     BRA   *0 ;abs = 0098
+   89:  	
+   90:  }
+  009a 81       RTS   
+   91:  
+   92:  void DoCuc()
+   93:  {
+   94:  	char n;	
+   95:  	int constX;
+   96:  	int constY;
+   97:  	int i;
+   98:  
+   99:  	char posX[7];
+  100:  	char posY[7];
+  101:  	char idx=0;
+
+Function: DoCuc
+Options : -Cc -Cu -F2o -Iy:\hiware\lib\hc05c\include -Lasm=%n.lst -Lp=%n.pre -Ml -Os -Onu -ObjN=%n.o -Oc -Onbsr -Or -Pio -TS1     
+
+  0000 3f00     CLR   __OVL_DoCuc_idx
+  102:  
+  103:  	for (n=0;n<7; n++)
+  104:  	{
+  105:  		posX[n]=0;
+  0002 3f00     CLR   __OVL_DoCuc_posX
+  106:  		posY[n]=0;
+  0004 3f00     CLR   __OVL_DoCuc_posY
+  0006 3f01     CLR   __OVL_DoCuc_posX:1
+  0008 3f01     CLR   __OVL_DoCuc_posY:1
+  000a 3f02     CLR   __OVL_DoCuc_posX:2
+  000c 3f02     CLR   __OVL_DoCuc_posY:2
+  000e 3f03     CLR   __OVL_DoCuc_posX:3
+  0010 3f03     CLR   __OVL_DoCuc_posY:3
+  0012 3f04     CLR   __OVL_DoCuc_posX:4
+  0014 3f04     CLR   __OVL_DoCuc_posY:4
+  0016 3f05     CLR   __OVL_DoCuc_posX:5
+  0018 3f05     CLR   __OVL_DoCuc_posY:5
+  001a 3f06     CLR   __OVL_DoCuc_posX:6
+  001c 3f06     CLR   __OVL_DoCuc_posY:6
+  001e a607     LDA   #7
+  0020 b700     STA   __OVL_DoCuc_n
+  107:  	}
+  108:  
+  109:  	constX=1;
+  0022 a601     LDA   #1
+  0024 b701     STA   __OVL_DoCuc_constX:1
+  0026 3f00     CLR   __OVL_DoCuc_constX
+  110:  	constY=1;
+  0028 b701     STA   __OVL_DoCuc_constY:1
+  002a 3f00     CLR   __OVL_DoCuc_constY
+  111:  	idx=1;
+  002c b700     STA   __OVL_DoCuc_idx
+  112:  
+  113:  	while (1)
+  114:  	{
+  115:  		OSD_TextPos (posX[0],posY[0]);
+  002e be00     LDX   __OVL_DoCuc_posX
+  0030 b600     LDA   __OVL_DoCuc_posY
+  0032 cd0000   JSR   OSD_TextPos
+  116:  		OSD_PrintExChar (0x77,0);
+  0035 ae77     LDX   #119
+  0037 4f       CLRA  
+  0038 cd0000   JSR   OSD_PrintExChar
+  117:  		
+  118:  		posX[idx]=posX[0];
+  003b be00     LDX   __OVL_DoCuc_idx
+  003d b600     LDA   __OVL_DoCuc_posX
+  003f e700     STA   __OVL_DoCuc_posX,X
+  119:  		posY[idx]=posY[0];
+  0041 b600     LDA   __OVL_DoCuc_posY
+  0043 e700     STA   __OVL_DoCuc_posY,X
+  120:  		
+  121:  		if (idx==TOTAL_CUC)
+  0045 b600     LDA   __OVL_DoCuc_idx
+  0047 a106     CMP   #6
+  0049 2640     BNE   *66 ;abs = 008b
+  122:  		{
+  123:  			OSD_TextPos (posX[1],posY[1]);
+  004b be01     LDX   __OVL_DoCuc_posX:1
+  004d b601     LDA   __OVL_DoCuc_posY:1
+  004f cd0000   JSR   OSD_TextPos
+  124:  			OSD_PrintStr (" ");
+  0052 ae01     LDX   #HIGH(" ")
+  0054 a600     LDA   #" "
+  0056 cd0000   JSR   OSD_PrintStr
+  125:  			
+  126:  			for (n=2;n<TOTAL_CUC+1;n++)
+  127:  			{
+  128:  				posX[n-1]=posX[n];
+  0059 b602     LDA   __OVL_DoCuc_posX:2
+  005b b701     STA   __OVL_DoCuc_posX:1
+  129:  				posY[n-1]=posY[n];
+  005d b602     LDA   __OVL_DoCuc_posY:2
+  005f b701     STA   __OVL_DoCuc_posY:1
+  0061 b603     LDA   __OVL_DoCuc_posX:3
+  0063 b702     STA   __OVL_DoCuc_posX:2
+  0065 b603     LDA   __OVL_DoCuc_posY:3
+  0067 b702     STA   __OVL_DoCuc_posY:2
+  0069 b604     LDA   __OVL_DoCuc_posX:4
+  006b b703     STA   __OVL_DoCuc_posX:3
+  006d b604     LDA   __OVL_DoCuc_posY:4
+  006f b703     STA   __OVL_DoCuc_posY:3
+  0071 b605     LDA   __OVL_DoCuc_posX:5
+  0073 b704     STA   __OVL_DoCuc_posX:4
+  0075 b605     LDA   __OVL_DoCuc_posY:5
+  0077 b704     STA   __OVL_DoCuc_posY:4
+  0079 b606     LDA   __OVL_DoCuc_posX:6
+  007b b705     STA   __OVL_DoCuc_posX:5
+  007d b606     LDA   __OVL_DoCuc_posY:6
+  007f b705     STA   __OVL_DoCuc_posY:5
+  0081 a607     LDA   #7
+  0083 b700     STA   __OVL_DoCuc_n
+  130:  			}
+  131:  			idx=TOTAL_CUC;
+  0085 a606     LDA   #6
+  0087 b700     STA   __OVL_DoCuc_idx
+  132:  			
+  133:  		}
+  0089 2002     BRA   *4 ;abs = 008d
+  134:  		else
+  135:  			idx++;
+  008b 3c00     INC   __OVL_DoCuc_idx
+  136:  
+  137:  		posX[0]+=constX;
+  008d b600     LDA   __OVL_DoCuc_posX
+  008f bb01     ADD   __OVL_DoCuc_constX:1
+  0091 b700     STA   __OVL_DoCuc_posX
+  138:  		posY[0]+=constY;
+  0093 97       TAX   
+  0094 b600     LDA   __OVL_DoCuc_posY
+  0096 bb01     ADD   __OVL_DoCuc_constY:1
+  0098 b700     STA   __OVL_DoCuc_posY
+  139:  
+  140:  		if (posX[0]>26) constX=-1;
+  009a a31a     CPX   #26
+  009c 2308     BLS   *10 ;abs = 00a6
+  009e a6ff     LDA   #-1
+  00a0 b701     STA   __OVL_DoCuc_constX:1
+  00a2 a6ff     LDA   #-1
+  00a4 b700     STA   __OVL_DoCuc_constX
+  141:  		if (posX[0]<1) constX=1;
+  00a6 b600     LDA   __OVL_DoCuc_posX
+  00a8 a101     CMP   #1
+  00aa 2406     BCC   *8 ;abs = 00b2
+  00ac a601     LDA   #1
+  00ae b701     STA   __OVL_DoCuc_constX:1
+  00b0 3f00     CLR   __OVL_DoCuc_constX
+  142:  		if (posY[0]>9) constY=-1;
+  00b2 b600     LDA   __OVL_DoCuc_posY
+  00b4 a109     CMP   #9
+  00b6 2308     BLS   *10 ;abs = 00c0
+  00b8 a6ff     LDA   #-1
+  00ba b701     STA   __OVL_DoCuc_constY:1
+  00bc a6ff     LDA   #-1
+  00be b700     STA   __OVL_DoCuc_constY
+  143:  		if (posY[0]<1) constY=1;
+  00c0 b600     LDA   __OVL_DoCuc_posY
+  00c2 a101     CMP   #1
+  00c4 2406     BCC   *8 ;abs = 00cc
+  00c6 a601     LDA   #1
+  00c8 b701     STA   __OVL_DoCuc_constY:1
+  00ca 3f00     CLR   __OVL_DoCuc_constY
+  144:  
+  145:  		for (i=0;i<3000 ;i++ );
+  00cc 3f01     CLR   __OVL_DoCuc_i:1
+  00ce 3f00     CLR   __OVL_DoCuc_i
+  00d0 3c01     INC   __OVL_DoCuc_i:1
+  00d2 2602     BNE   *4 ;abs = 00d6
+  00d4 3c00     INC   __OVL_DoCuc_i
+  00d6 be00     LDX   __OVL_DoCuc_i
+  00d8 a60b     LDA   #11
+  00da cd0000   JSR   _CMPS
+  00dd 25f1     BCS   *-13 ;abs = 00d0
+  00df 2606           *8 ;abs = 00e7
+  00e1 b601     LDA   __OVL_DoCuc_i:1
+  00e3 a1b8     CMP   #-72
+  00e5 25e9     BCS   *-21 ;abs = 00d0
+  00e7 ccff44   JMP   DoCuc:46
+  146:  	}
+  147:  }
+  00ea 81       RTS   

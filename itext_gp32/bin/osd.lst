@@ -1,0 +1,747 @@
+ANSI-C/cC++ Compiler for HC08 V-5.0.17, Apr 22 2003
+
+    1:  #include "osd.h"
+    2:  #include "ctype.h"
+    3:  
+    4:  
+    5:  #define ZOOM_REGISTER           0xcc
+    6:  #define COLOR_REGISTER          0xcd
+    7:  #define CONTROL_REGISTER        0xce
+    8:  #define POSITION_REGISTER       0xcf
+    9:  #define MODE_REGISTER           0xd0
+   10:  #define PAGE_ADDRESS            0x0
+   11:  #define DATA_REGISTER           0x1000
+   12:  #define ROW_ATTRIBUTES          0xc0
+   13:  #define REQUEST                 0xec
+   14:  
+   15:  #define Tui	unsigned int
+   16:  #define Tuc unsigned char
+   17:  void OSD_SendWord (int  word);
+   18:  #define CLI()	asm cli
+   19:  #define SEI()	asm sei
+   20:  
+   21:  union {
+   22:    struct {
+   23:  	 Tui	_PageMode	:1;
+   24:  	 Tui	_CharMode	:1;
+   25:  	 Tui	_display	:1;
+   26:  	 Tui	_c3			:1;
+   27:  	 Tui	_BlinkOpt	:1;
+   28:  	 Tui	_BlinkPeriod:2;
+   29:  	 Tui	_sync		:1;
+   30:  	 Tui	_standard	:1;
+   31:  	 Tui	_ColorEnc	:1;
+   32:  	 Tui	_luminance	:1;
+   33:  	 Tui	_VideoFullPage:1;
+   34:    } _bits;
+   35:    Tuc      _valor;
+   36:  } u_control; 
+   37:  
+   38:  
+   39:  union {
+   40:    struct {
+   41:  	 Tui	_m0			:1;
+   42:  	 Tui	_m1			:1;
+   43:  	 Tui	_m2			:1;
+   44:  	 Tui	_m3			:1;
+   45:  	 Tui	_m4			:1;
+   46:  	 Tui	_m5			:1;
+   47:  	 Tui	_m6			:1;
+   48:  	 Tui	_m7			:1;
+   49:  	 Tui	_m8			:1;
+   50:  	 Tui	_m9			:1;
+   51:  	 Tui	_m10		:1;
+   52:  	 Tui	_m11		:1;
+   53:    } _bits;
+   54:    Tuc      _valor;
+   55:  } u_mode; 
+   56:  
+   57:  
+   58:  const char tabla[]={
+   59:          '0','1','2','3','4','5','6','7','8','9','-',' ','A','B','C','D','E','F','G','H','I','J','K',
+   60:          'L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',':','.','/','·','a','b','c','d',
+   61:          'e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','à',
+   62:          'â','ä','á','é','è','ë','ì','î','ï','í','ò','ô','ö','ó','ù','û','ü','ú','Ä','Ö','Ü'};
+   63:  
+   64:  void OSD_Reset (void)
+   65:  {
+
+Function: OSD_Reset
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  0000 a7fc             AIS   #-4
+   66:     char n,i;
+   67:     int buff;
+   68:  
+   69:  	 
+   70:     u_control._valor =0xb8e;
+  0002 a68e             LDA   #-114
+  0004 c70000           STA   u_control
+   71:  
+   72:  		OSD_SendWord (0x3000);
+  0007 4f               CLRA  
+  0008 ae30             LDX   #48
+  000a cd0000           JSR   OSD_SendWord
+   73:  		OSD_SendWord (0x3000);
+  000d 4f               CLRA  
+  000e ae30             LDX   #48
+  0010 cd0000           JSR   OSD_SendWord
+   74:  		OSD_SendWord (0x00db);
+  0013 a6db             LDA   #-37
+  0015 ad69             BSR   L80 ;abs = 0080
+   75:  		OSD_SendWord (0x1000);		//Reset del OSD
+  0017 4f               CLRA  
+  0018 ad61             BSR   L7B ;abs = 007b
+   76:  
+   77:  //		OSD_SendWord (0x00cc);            /* Init registers (point to register 12) */
+   78:  //		OSD_SendWord (0x1000);            /* nastav na Zoom registr */
+   79:  //		OSD_SendWord (0x1C24);            /* Color -- screenbackg=red, characterbackg=blue */
+   80:  //		OSD_SendWord (0x1bd4);            /* Control */
+   81:  //		OSD_SendWord (0x15a1);            /* Position = 33 horizontal, 22 vertical */
+   82:  //		OSD_SendWord (0x183e);            /* Mode */
+   83:   
+   84:  	 
+   85:     OSD_SendWord (CONTROL_REGISTER);
+  001a a6ce             LDA   #-50
+  001c ad62             BSR   L80 ;abs = 0080
+   86:     OSD_SendWord (DATA_REGISTER | 0xb8e);
+  001e a68e             LDA   #-114
+  0020 ae1b             LDX   #27
+  0022 cd0000           JSR   OSD_SendWord
+   87:  
+   88:     OSD_SendWord (MODE_REGISTER);
+  0025 a6d0             LDA   #-48
+  0027 ad57             BSR   L80 ;abs = 0080
+   89:     OSD_SendWord (DATA_REGISTER| 0x04);
+  0029 a604             LDA   #4
+  002b ad4e             BSR   L7B ;abs = 007b
+   90:  
+   91:     OSD_SendWord (ZOOM_REGISTER);
+  002d a6cc             LDA   #-52
+  002f ad4f             BSR   L80 ;abs = 0080
+   92:     OSD_SendWord (DATA_REGISTER| 0x00);
+  0031 4f               CLRA  
+  0032 ad47             BSR   L7B ;abs = 007b
+   93:  
+   94:     OSD_SendWord (COLOR_REGISTER);
+  0034 a6cd             LDA   #-51
+  0036 ad48             BSR   L80 ;abs = 0080
+   95:     OSD_SendWord (DATA_REGISTER | 0x482);
+  0038 a682             LDA   #-126
+  003a ae14             LDX   #20
+  003c cd0000           JSR   OSD_SendWord
+   96:  
+   97:  
+   98:      OSD_SendWord (0x00c0);
+  003f a6c0             LDA   #-64
+  0041 ad3d             BSR   L80 ;abs = 0080
+   99:      for (i=0;i<11;i++)
+  0043 95               TSX   
+  0044 7f               CLR   ,X
+  0045          L45:    
+  100:      {
+  101:      	OSD_SendWord (DATA_REGISTER|0xC0);
+  0045 a6c0             LDA   #-64
+  0047 ad32             BSR   L7B ;abs = 007b
+  0049 95               TSX   
+  004a 7c               INC   ,X
+  004b f6               LDA   ,X
+  004c a10b             CMP   #11
+  004e 25f5             BCS   L45 ;abs = 0045
+  102:      }
+  103:  
+  104:     for (n=0;n<11 ;n++ )
+  0050 6f03             CLR   3,X
+  0052          L52:    
+  105:     {
+  106:         for (i=0;i<28;i++)
+  0052 7f               CLR   ,X
+  0053          L53:    
+  107:         {
+  108:             buff=n<<8;
+  0053 95               TSX   
+  0054 e603             LDA   3,X
+  0056 e701             STA   1,X
+  0058 6f02             CLR   2,X
+  109:             buff|=i;
+  005a f6               LDA   ,X
+  005b e702             STA   2,X
+  005d ee01             LDX   1,X
+  005f 9eef02           STX   2,SP
+  110:             OSD_SendWord (PAGE_ADDRESS| buff);
+  0062 cd0000           JSR   OSD_SendWord
+  111:             OSD_SendWord (DATA_REGISTER | 0x08b);
+  0065 a68b             LDA   #-117
+  0067 ad12             BSR   L7B ;abs = 007b
+  0069 95               TSX   
+  006a 7c               INC   ,X
+  006b f6               LDA   ,X
+  006c a11c             CMP   #28
+  006e 25e3             BCS   L53 ;abs = 0053
+  0070 6c03             INC   3,X
+  0072 e603             LDA   3,X
+  0074 a10b             CMP   #11
+  0076 25da             BCS   L52 ;abs = 0052
+  112:         }
+  113:     }
+  114:  }
+  0078 a704             AIS   #4
+  007a 81               RTS   
+  007b          L7B:    
+  007b ae10             LDX   #16
+  007d cc0000           JMP   OSD_SendWord
+  0080          L80:    
+  0080 5f               CLRX  
+  0081 cc0000           JMP   OSD_SendWord
+  115:  
+  116:  void OSD_FullMode (char mode)
+  117:  {
+
+Function: OSD_FullMode
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  118:  	u_control._bits._PageMode = mode;
+  0000 a501             BIT   #1
+  0002 2607             BNE   LB ;abs = 000b
+  0004 c60000           LDA   u_control
+  0007 a4fe             AND   #-2
+  0009 2005             BRA   L10 ;abs = 0010
+  000b          LB:     
+  000b c60000           LDA   u_control
+  000e aa01             ORA   #1
+  0010          L10:    
+  0010 c70000           STA   u_control
+  119:  	OSD_SendWord (CONTROL_REGISTER);
+  0013 a6ce             LDA   #-50
+  0015 5f               CLRX  
+  0016 cd0000           JSR   OSD_SendWord
+  120:      OSD_SendWord (DATA_REGISTER| u_control._valor);
+  0019 ae10             LDX   #16
+  001b c60000           LDA   u_control
+  001e cc0000           JMP   OSD_SendWord
+  121:  }
+  122:  
+  123:  void OSD_CharMode (char mode)
+  124:  {
+
+Function: OSD_CharMode
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  125:  	u_control._bits._CharMode = mode;
+  0000 a501             BIT   #1
+  0002 2607             BNE   LB ;abs = 000b
+  0004 c60000           LDA   u_control
+  0007 a4fd             AND   #-3
+  0009 2005             BRA   L10 ;abs = 0010
+  000b          LB:     
+  000b c60000           LDA   u_control
+  000e aa02             ORA   #2
+  0010          L10:    
+  0010 c70000           STA   u_control
+  126:  	OSD_SendWord (CONTROL_REGISTER);
+  0013 a6ce             LDA   #-50
+  0015 5f               CLRX  
+  0016 cd0000           JSR   OSD_SendWord
+  127:      OSD_SendWord (DATA_REGISTER| u_control._valor);
+  0019 ae10             LDX   #16
+  001b c60000           LDA   u_control
+  001e cc0000           JMP   OSD_SendWord
+  128:  }
+  129:  
+  130:  void OSD_DisplayOn (char display)
+  131:  {
+
+Function: OSD_DisplayOn
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  132:  	u_control._bits._display = display;
+  0000 a501             BIT   #1
+  0002 2607             BNE   LB ;abs = 000b
+  0004 c60000           LDA   u_control
+  0007 a4fb             AND   #-5
+  0009 2005             BRA   L10 ;abs = 0010
+  000b          LB:     
+  000b c60000           LDA   u_control
+  000e aa04             ORA   #4
+  0010          L10:    
+  0010 c70000           STA   u_control
+  133:  	OSD_SendWord (CONTROL_REGISTER);
+  0013 a6ce             LDA   #-50
+  0015 5f               CLRX  
+  0016 cd0000           JSR   OSD_SendWord
+  134:      OSD_SendWord (DATA_REGISTER| u_control._valor);
+  0019 ae10             LDX   #16
+  001b c60000           LDA   u_control
+  001e cc0000           JMP   OSD_SendWord
+  135:  }
+  136:  
+  137:  void OSD_ColorMode (char mode)
+  138:  {
+
+Function: OSD_ColorMode
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  139:  	u_control._bits._c3 = mode;
+  0000 a501             BIT   #1
+  0002 2607             BNE   LB ;abs = 000b
+  0004 c60000           LDA   u_control
+  0007 a4f7             AND   #-9
+  0009 2005             BRA   L10 ;abs = 0010
+  000b          LB:     
+  000b c60000           LDA   u_control
+  000e aa08             ORA   #8
+  0010          L10:    
+  0010 c70000           STA   u_control
+  140:  	OSD_SendWord (CONTROL_REGISTER);
+  0013 a6ce             LDA   #-50
+  0015 5f               CLRX  
+  0016 cd0000           JSR   OSD_SendWord
+  141:      OSD_SendWord (DATA_REGISTER| u_control._valor);
+  0019 ae10             LDX   #16
+  001b c60000           LDA   u_control
+  001e cc0000           JMP   OSD_SendWord
+  142:  }
+  143:  
+  144:  void OSD_BlinkOption (char option)
+  145:  {
+
+Function: OSD_BlinkOption
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  146:  	u_control._bits._BlinkOpt = option;
+  0000 a501             BIT   #1
+  0002 2607             BNE   LB ;abs = 000b
+  0004 c60000           LDA   u_control
+  0007 a4ef             AND   #-17
+  0009 2005             BRA   L10 ;abs = 0010
+  000b          LB:     
+  000b c60000           LDA   u_control
+  000e aa10             ORA   #16
+  0010          L10:    
+  0010 c70000           STA   u_control
+  147:  	OSD_SendWord (CONTROL_REGISTER);
+  0013 a6ce             LDA   #-50
+  0015 5f               CLRX  
+  0016 cd0000           JSR   OSD_SendWord
+  148:      OSD_SendWord (DATA_REGISTER| u_control._valor);
+  0019 ae10             LDX   #16
+  001b c60000           LDA   u_control
+  001e cc0000           JMP   OSD_SendWord
+  149:  }
+  150:  
+  151:  void OSD_BlinkPeriod (char period)
+  152:  {
+
+Function: OSD_BlinkPeriod
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  153:  	u_control._bits._BlinkPeriod = period;
+  0000 62               NSA   
+  0001 a4f0             AND   #-16
+  0003 48               LSLA  
+  0004 450000           LDHX  @u_control
+  0007 f8               EOR   ,X
+  0008 a460             AND   #96
+  000a f8               EOR   ,X
+  000b f7               STA   ,X
+  154:  	OSD_SendWord (CONTROL_REGISTER);
+  000c a6ce             LDA   #-50
+  000e 5f               CLRX  
+  000f cd0000           JSR   OSD_SendWord
+  155:      OSD_SendWord (DATA_REGISTER| u_control._valor);
+  0012 ae10             LDX   #16
+  0014 c60000           LDA   u_control
+  0017 cc0000           JMP   OSD_SendWord
+  156:  }
+  157:  
+  158:  void OSD_SyncMode (char mode)
+  159:  {
+
+Function: OSD_SyncMode
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  160:  	u_control._bits._sync = mode;
+  0000 a501             BIT   #1
+  0002 2607             BNE   LB ;abs = 000b
+  0004 c60000           LDA   u_control
+  0007 a47f             AND   #127
+  0009 2005             BRA   L10 ;abs = 0010
+  000b          LB:     
+  000b c60000           LDA   u_control
+  000e aa80             ORA   #-128
+  0010          L10:    
+  0010 c70000           STA   u_control
+  161:  	OSD_SendWord (CONTROL_REGISTER);
+  0013 a6ce             LDA   #-50
+  0015 5f               CLRX  
+  0016 cd0000           JSR   OSD_SendWord
+  162:      OSD_SendWord (DATA_REGISTER| u_control._valor);
+  0019 ae10             LDX   #16
+  001b c60000           LDA   u_control
+  001e cc0000           JMP   OSD_SendWord
+  163:  }
+  164:  
+  165:  void OSD_StandarType (char type)
+  166:  {
+
+Function: OSD_StandarType
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  167:  	u_control._bits._standard = type;
+  0000 a501             BIT   #1
+  0002 2607             BNE   LB ;abs = 000b
+  0004 c60001           LDA   u_control:1
+  0007 a4fe             AND   #-2
+  0009 2005             BRA   L10 ;abs = 0010
+  000b          LB:     
+  000b c60001           LDA   u_control:1
+  000e aa01             ORA   #1
+  0010          L10:    
+  0010 c70001           STA   u_control:1
+  168:  	OSD_SendWord (CONTROL_REGISTER);
+  0013 a6ce             LDA   #-50
+  0015 5f               CLRX  
+  0016 cd0000           JSR   OSD_SendWord
+  169:      OSD_SendWord (DATA_REGISTER| u_control._valor);
+  0019 ae10             LDX   #16
+  001b c60000           LDA   u_control
+  001e cc0000           JMP   OSD_SendWord
+  170:  }
+  171:  
+  172:  void OSD_ColorEncoder (char encoder)
+  173:  {
+
+Function: OSD_ColorEncoder
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  174:  	u_control._bits._ColorEnc = encoder;
+  0000 a501             BIT   #1
+  0002 2607             BNE   LB ;abs = 000b
+  0004 c60001           LDA   u_control:1
+  0007 a4fd             AND   #-3
+  0009 2005             BRA   L10 ;abs = 0010
+  000b          LB:     
+  000b c60001           LDA   u_control:1
+  000e aa02             ORA   #2
+  0010          L10:    
+  0010 c70001           STA   u_control:1
+  175:  	OSD_SendWord (CONTROL_REGISTER);
+  0013 a6ce             LDA   #-50
+  0015 5f               CLRX  
+  0016 cd0000           JSR   OSD_SendWord
+  176:      OSD_SendWord (DATA_REGISTER| u_control._valor);
+  0019 ae10             LDX   #16
+  001b c60000           LDA   u_control
+  001e cc0000           JMP   OSD_SendWord
+  177:  }
+  178:  
+  179:  void OSD_LuminanceLevels (char levels)
+  180:  {
+
+Function: OSD_LuminanceLevels
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  181:  	u_control._bits._luminance = levels;
+  0000 a501             BIT   #1
+  0002 2607             BNE   LB ;abs = 000b
+  0004 c60001           LDA   u_control:1
+  0007 a4fb             AND   #-5
+  0009 2005             BRA   L10 ;abs = 0010
+  000b          LB:     
+  000b c60001           LDA   u_control:1
+  000e aa04             ORA   #4
+  0010          L10:    
+  0010 c70001           STA   u_control:1
+  182:  	OSD_SendWord (CONTROL_REGISTER);
+  0013 a6ce             LDA   #-50
+  0015 5f               CLRX  
+  0016 cd0000           JSR   OSD_SendWord
+  183:      OSD_SendWord (DATA_REGISTER| u_control._valor);
+  0019 ae10             LDX   #16
+  001b c60000           LDA   u_control
+  001e cc0000           JMP   OSD_SendWord
+  184:  }
+  185:  
+  186:  void OSD_VideoFullPageMode (char mode)
+  187:  {
+
+Function: OSD_VideoFullPageMode
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  188:  	u_control._bits._VideoFullPage = mode;
+  0000 a501             BIT   #1
+  0002 2607             BNE   LB ;abs = 000b
+  0004 c60001           LDA   u_control:1
+  0007 a4f7             AND   #-9
+  0009 2005             BRA   L10 ;abs = 0010
+  000b          LB:     
+  000b c60001           LDA   u_control:1
+  000e aa08             ORA   #8
+  0010          L10:    
+  0010 c70001           STA   u_control:1
+  189:  	OSD_SendWord (CONTROL_REGISTER);
+  0013 a6ce             LDA   #-50
+  0015 5f               CLRX  
+  0016 cd0000           JSR   OSD_SendWord
+  190:    OSD_SendWord (DATA_REGISTER| u_control._valor);
+  0019 ae10             LDX   #16
+  001b c60000           LDA   u_control
+  001e cc0000           JMP   OSD_SendWord
+  191:    
+  192:  }
+  193:  
+  194:  void OSD_SendWord (int word)
+  195:  {
+
+Function: OSD_SendWord
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  0000 87               PSHA  
+  0001 89               PSHX  
+  0002 8b               PSHH  
+  196:  	char n;
+  197:  
+  198:  	OSD_CTRL_PORT &= ~BIT_OSD_CSU;
+  0003 1300             BCLR  1,_PTB
+  199:  
+  200:  	for (n=0;n<16 ;n++ )
+  0005 95               TSX   
+  0006 7f               CLR   ,X
+  0007          L7:     
+  201:  	{
+  202:  		if (word & 0x8000)
+  0007 e601             LDA   1,X
+  0009 2a03             BPL   LE ;abs = 000e
+  203:  			OSD_SERIAL_PORT |=BIT_OSD_DATAOUT;
+  000b 1400             BSET  2,_PTD
+  000d 65               SKIP2 L10 ;abs = 0010
+  000e          LE:     
+  204:  		else
+  205:  			 OSD_SERIAL_PORT &= ~BIT_OSD_DATAOUT;
+  000e 1500             BCLR  2,_PTD
+  0010          L10:    
+  206:  
+  207:  		OSD_SERIAL_PORT &=~BIT_OSD_CLOCK;
+  0010 1700             BCLR  3,_PTD
+  208:  		OSD_SERIAL_PORT |=BIT_OSD_CLOCK;
+  0012 1600             BSET  3,_PTD
+  209:  
+  210:  		word = word << 1;	
+  0014 6802             LSL   2,X
+  0016 6901             ROL   1,X
+  0018 7c               INC   ,X
+  0019 f6               LDA   ,X
+  001a a110             CMP   #16
+  001c 25e9             BCS   L7 ;abs = 0007
+  211:  	}
+  212:  	OSD_CTRL_PORT |= BIT_OSD_CSU;
+  001e 1200             BSET  1,_PTB
+  213:  }
+  0020 a703             AIS   #3
+  0022 81               RTS   
+  214:  
+  215:  
+  216:  void OSD_ScreenPos (char hor, char vert)
+  217:  {
+
+Function: OSD_ScreenPos
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  0000 87               PSHA  
+  0001 a7fe             AIS   #-2
+  218:     int tmp;
+  219:  
+  220:     tmp = vert;
+  0003 9eef02           STX   2,SP
+  0006 95               TSX   
+  0007 7f               CLR   ,X
+  221:     tmp<<=6;
+  0008 a606             LDA   #6
+  000a          LA:     
+  000a 6801             LSL   1,X
+  000c 79               ROL   ,X
+  000d 4bfb             DBNZA LA ;abs = 000a
+  222:     tmp|=hor;
+  000f e602             LDA   2,X
+  0011 ea01             ORA   1,X
+  0013 e701             STA   1,X
+  0015 f6               LDA   ,X
+  0016 f7               STA   ,X
+  223:     OSD_SendWord (POSITION_REGISTER);
+  0017 a6cf             LDA   #-49
+  0019 5f               CLRX  
+  001a ad00             BSR   OSD_SendWord
+  224:     OSD_SendWord (DATA_REGISTER| tmp);
+  001c 95               TSX   
+  001d f6               LDA   ,X
+  001e aa10             ORA   #16
+  0020 97               TAX   
+  0021 9ee602           LDA   2,SP
+  0024 ad00             BSR   OSD_SendWord
+  225:  
+  226:  /*
+  227:     tmp = vert;
+  228:     tmp<<=6;
+  229:     tmp|=hor;
+  230:     OSD_SendWord (POSITION_REGISTER);
+  231:     OSD_SendWord (DATA_REGISTER| tmp);*/
+  232:  }
+  0026 a703             AIS   #3
+  0028 81               RTS   
+  233:  
+  234:  void OSD_TextPos (char x, char y)
+  235:  {
+
+Function: OSD_TextPos
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  0000 a7fe             AIS   #-2
+  236:  	int iCol = y<<8;
+  0002 9eef01           STX   1,SP
+  0005 95               TSX   
+  0006 6f01             CLR   1,X
+  237:  
+  238:      OSD_SendWord ((PAGE_ADDRESS|iCol)|x);
+  0008 fe               LDX   ,X
+  0009 ad00             BSR   OSD_SendWord
+  239:  }
+  000b a702             AIS   #2
+  000d 81               RTS   
+  240:  
+  241:  void OSD_PrintStr (char *str)
+  242:  {
+
+Function: OSD_PrintStr
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  0000 87               PSHA  
+  0001 89               PSHX  
+  0002 8b               PSHH  
+  243:  	char car;
+  244:      while (*str!=0)
+  0003 2027             BRA   L2C ;abs = 002c
+  0005          L5:     
+  245:      {
+  246:          for (car=0;car<90;car++)
+  0005 95               TSX   
+  0006 7f               CLR   ,X
+  0007          L7:     
+  247:          {
+  248:              if (tabla[car]==*str)
+  0007 e601             LDA   1,X
+  0009 87               PSHA  
+  000a ee02             LDX   2,X
+  000c 8a               PULH  
+  000d f6               LDA   ,X
+  000e 95               TSX   
+  000f fe               LDX   ,X
+  0010 8c               CLRH  
+  0011 d10000           CMP   @tabla,X
+  0014 2707             BEQ   L1D ;abs = 001d
+  0016 95               TSX   
+  0017 7c               INC   ,X
+  0018 f6               LDA   ,X
+  0019 a15a             CMP   #90
+  001b 25ea             BCS   L7 ;abs = 0007
+  001d          L1D:    
+  249:                 break;
+  250:          }
+  251:          OSD_SendWord (DATA_REGISTER|car);
+  001d ae10             LDX   #16
+  001f 9ee601           LDA   1,SP
+  0022 cd0000           JSR   OSD_SendWord
+  252:  		str++;
+  0025 95               TSX   
+  0026 6c02             INC   2,X
+  0028 2602             BNE   L2C ;abs = 002c
+  002a 6c01             INC   1,X
+  002c          L2C:    
+  002c 95               TSX   
+  002d e601             LDA   1,X
+  002f 87               PSHA  
+  0030 ee02             LDX   2,X
+  0032 8a               PULH  
+  0033 7d               TST   ,X
+  0034 26cf             BNE   L5 ;abs = 0005
+  253:      }
+  254:  }
+  0036 a703             AIS   #3
+  0038 81               RTS   
+  255:  
+  256:  void OSD_PrintChar (char ch, char mode)
+  257:  {
+
+Function: OSD_PrintChar
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  0000 87               PSHA  
+  0001 89               PSHX  
+  0002 8b               PSHH  
+  258:  	char car;
+  259:  	for (car=0;car<90;car++)
+  0003 95               TSX   
+  0004 7f               CLR   ,X
+  0005          L5:     
+  260:  	{
+  261:  	   if (tabla[car]==ch)
+  0005 fe               LDX   ,X
+  0006 8c               CLRH  
+  0007 9ee603           LDA   3,SP
+  000a d10000           CMP   @tabla,X
+  000d 2707             BEQ   L16 ;abs = 0016
+  000f 95               TSX   
+  0010 7c               INC   ,X
+  0011 f6               LDA   ,X
+  0012 a15a             CMP   #90
+  0014 25ef             BCS   L5 ;abs = 0005
+  0016          L16:    
+  262:  		  break;
+  263:  	}
+  264:  	car|=mode;
+  0016 95               TSX   
+  0017 e601             LDA   1,X
+  0019 fa               ORA   ,X
+  265:      OSD_SendWord (DATA_REGISTER|car);
+  001a ae10             LDX   #16
+  001c cd0000           JSR   OSD_SendWord
+  266:  }
+  001f a703             AIS   #3
+  0021 81               RTS   
+  267:  
+  268:  void OSD_PrintExChar (char ch, char mode)
+  269:  {
+
+Function: OSD_PrintExChar
+Source  : Z:\itext\itext_gp32\Code\osd.c
+Options : -Env"GENPATH=Z:\itext\itext_gp32;Z:\itext\itext_gp32\bin;Z:\itext\itext_gp32\prm;Z:\itext\itext_gp32\cmd;Z:\itext\itext_gp32\Sources;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\LIB;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\SRC;Z:\itext\itext_gp32\Code;Z:\itext\itext_gp32\doc;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\hc08c\include;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert\PESL\HC08;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\Bin\Plugins\support\ProcessorExpert;D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -Env"LIBPATH=D:\Archivos de programa\Metrowerks\CodeWarrior CW08_V3.0\lib\HC08c\INCLUDE" -EnvOBJPATH=Z:\itext\itext_gp32\bin -EnvTEXTPATH=Z:\itext\itext_gp32\bin -Lasm=%n.lst -Ms -ObjN=Z:\itext\itext_gp32\itext-gp32_Data\P&E_FCS\ObjectCode\osd.c.o -WmsgSd1106
+
+  0000 87               PSHA  
+  270:  	ch|=mode;
+  0001 9f               TXA   
+  0002 95               TSX   
+  0003 fa               ORA   ,X
+  271:      OSD_SendWord (DATA_REGISTER|ch);
+  0004 ae10             LDX   #16
+  0006 cd0000           JSR   OSD_SendWord
+  272:  }
+  0009 8a               PULH  
+  000a 81               RTS   
+  273:  
+  274:  

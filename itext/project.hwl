@@ -1,0 +1,15 @@
+OPEN Source 0 0 60 55
+Source < attributes MARKS off
+OPEN Assembly 60 0 40 47
+Assembly < attributes ADR off,CODE off,ABSADR on,TOPPC 0x23E
+OPEN Register 60 46 40 14
+Register < attributes FORMAT HEX
+OPEN Memory 60 60 40 40
+Memory < attributes FORMAT hex,WORD 1,ASC on,ADR on,ADDRESS 0x0
+OPEN Data 0 54 60 24
+Data < attributes SCOPE local,FORMAT Hex,MODE automatic,UPDATERATE 10
+OPEN Module 0 78 60 22
+bckcolor 50331647
+font 'Courier New' 9 BLACK
+AUTOSIZE on
+ACTIVATE Module Memory Register Assembly Data Source 
